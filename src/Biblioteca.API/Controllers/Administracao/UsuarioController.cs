@@ -102,28 +102,4 @@ public class UsuarioController : MainController
         await _usuarioService.Desativar(id);
         return NoContent();
     }
-
-    [HttpPatch("Tornar-Administrador/{id}")]
-    [SwaggerOperation(Summary = "Tornar um usuário em administrador.", Tags = new[] { "Usuários - Administração" })]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> TornarAdministrador(int id)
-    {
-        await _usuarioService.TornarAdministrador(id);
-        return NoContent();
-    }
-
-    [HttpPatch("Tornar-Usuario/{id}")]
-    [SwaggerOperation(Summary = "Tornar um administrador em usuário.", Tags = new[] { "Usuários - Administração" })]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> TornarUsuarioComum(int id)
-    {
-        await _usuarioService.TornarUsuarioComum(id);
-        return NoContent();
-    }
 }

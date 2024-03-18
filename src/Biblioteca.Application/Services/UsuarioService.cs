@@ -101,36 +101,6 @@ public class UsuarioService : BaseService, IUsuarioService
         await CommitChanges();
     }
 
-    public async Task TornarAdministrador(int id)
-    {
-        var tornarAdministrador = await _usuarioRepository.ObterPorId(id);
-        if (tornarAdministrador == null)
-        {
-            Notificator.HandleNotFoundResource();
-            return;
-        }
-
-        tornarAdministrador.SuperUsuario = true;
-
-        _usuarioRepository.Atualizar(tornarAdministrador);
-        await CommitChanges();
-    }
-
-    public async Task TornarUsuarioComum(int id)
-    {
-        var tornarUsuarioComum = await _usuarioRepository.ObterPorId(id);
-        if (tornarUsuarioComum == null)
-        {
-            Notificator.HandleNotFoundResource();
-            return;
-        }
-
-        tornarUsuarioComum.SuperUsuario = false;
-
-        _usuarioRepository.Atualizar(tornarUsuarioComum);
-        await CommitChanges();
-    }
-
     private async Task<bool> ValidacoesParaAdicionarUsuario(AdicionarUsuarioDto dto)
     {
         var usuario = Mapper.Map<Usuario>(dto);

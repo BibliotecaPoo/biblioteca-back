@@ -11,6 +11,4 @@ public interface IUsuarioService
     Task<List<UsuarioDto>> ObterTodos();
     Task Reativar(int id);
     Task Desativar(int id);
-    Task TornarAdministrador(int id);
-    Task TornarUsuarioComum(int id);
 }
