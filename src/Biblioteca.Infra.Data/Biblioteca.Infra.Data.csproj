@@ -15,4 +15,13 @@
       <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.2" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Biblioteca.Core\Biblioteca.Core.csproj" />
+      <ProjectReference Include="..\Biblioteca.Domain\Biblioteca.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Migrations\" />
+    </ItemGroup>
+
 </Project>

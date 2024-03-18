@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Biblioteca.Application", "s
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Biblioteca.API", "src\Biblioteca.API\Biblioteca.API.csproj", "{69DE4398-70D0-45D0-9E8E-634699F34E81}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Biblioteca.Core", "src\Biblioteca.Core\Biblioteca.Core.csproj", "{35FD83A7-31DC-45A5-A6A7-061F2F9A4B62}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,6 +22,7 @@ Global
 		{41384306-0616-4429-BD06-301CF5A209B1} = {327BEA6C-2605-421F-B369-45C78D4CAD49}
 		{AB7AE899-CEB7-47B5-B916-ACC95EAF71BA} = {327BEA6C-2605-421F-B369-45C78D4CAD49}
 		{69DE4398-70D0-45D0-9E8E-634699F34E81} = {327BEA6C-2605-421F-B369-45C78D4CAD49}
+		{35FD83A7-31DC-45A5-A6A7-061F2F9A4B62} = {327BEA6C-2605-421F-B369-45C78D4CAD49}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{B18852DA-7364-4759-AE2E-AEF6FB65BDF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -38,5 +41,9 @@ Global
 		{69DE4398-70D0-45D0-9E8E-634699F34E81}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{69DE4398-70D0-45D0-9E8E-634699F34E81}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{69DE4398-70D0-45D0-9E8E-634699F34E81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35FD83A7-31DC-45A5-A6A7-061F2F9A4B62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35FD83A7-31DC-45A5-A6A7-061F2F9A4B62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35FD83A7-31DC-45A5-A6A7-061F2F9A4B62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35FD83A7-31DC-45A5-A6A7-061F2F9A4B62}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

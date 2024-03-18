@@ -1,16 +1,64 @@
+using System.Globalization;
+using Biblioteca.API.Configurations;
+using Biblioteca.Application;
+using Microsoft.AspNetCore.Localization;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder
+    .Services
+    .Configure<RequestLocalizationOptions>(o =>
+    {
+        var supportedCultures = new[] { new CultureInfo("pt-BR") };
+        o.DefaultRequestCulture = new RequestCulture("pt-BR", "pt-BR");
+        o.SupportedCultures = supportedCultures;
+        o.SupportedUICultures = supportedCultures;
+    });
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder
+    .Configuration
+    .SetBasePath(builder.Environment.ContentRootPath)
+    .AddJsonFile("appsettings.json", true, true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true, true)
+    .AddEnvironmentVariables();
+
+builder
+    .Services
+    .SetupSettings(builder.Configuration);
+
+builder
+    .Services
+    .AddResponseCompression(options => { options.EnableForHttps = true; });
+
+builder
+    .Services
+    .AddApiConfiguration();
+
+builder
+    .Services
+    .ConfigureApplication(builder.Configuration);
+
+builder
+    .Services
+    .AddServices();
+
+builder
+    .Services
+    .AddVersioning();
+
+builder
+    .Services
+    .AddSwagger();
+
+builder
+    .Services
+    .AddAuthenticationConfig(builder.Configuration, builder.Environment);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+app.UseApiConfiguration(app.Services, app.Environment);
+
+if (!app.Environment.IsProduction())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -18,7 +66,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+app.UseAuthenticationConfig();
 
 app.MapControllers();
 
