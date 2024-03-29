@@ -3,7 +3,6 @@ using System.Security.Claims;
 using AutoMapper;
 using Biblioteca.Application.Contracts.Services;
 using Biblioteca.Application.DTOs.Auth;
-using Biblioteca.Application.DTOs.Usuario;
 using Biblioteca.Application.Notifications;
 using Biblioteca.Core.Enum;
 using Biblioteca.Core.Extensions;
@@ -33,18 +32,6 @@ public class AuthService : BaseService, IAuthService
         _passwordHasher = passwordHasher;
         _jwtService = jwtService;
         _jwtSettings = jwtSettings.Value;
-    }
-
-    public async Task<UsuarioDto?> Registrar(AdicionarUsuarioDto dto)
-    {
-        if (!await ValidacoesParaRegistrarUsuario(dto))
-            return null;
-
-        var registrarUsuario = Mapper.Map<Usuario>(dto);
-        registrarUsuario.Senha = _passwordHasher.HashPassword(registrarUsuario, dto.Senha);
-
-        _usuarioRepository.Adicionar(registrarUsuario);
-        return await CommitChanges() ? Mapper.Map<UsuarioDto>(registrarUsuario) : null;
     }
 
     public async Task<TokenDto?> Login(LoginDto dto)
@@ -103,28 +90,6 @@ public class AuthService : BaseService, IAuthService
         return tokenHandler.WriteToken(token);
     }
 
-    private async Task<bool> ValidacoesParaRegistrarUsuario(AdicionarUsuarioDto dto)
-    {
-        var usuario = Mapper.Map<Usuario>(dto);
-        var validador = new ValidadorParaAdicionarUsuario();
-
-        var resultadoDaValidacao = await validador.ValidateAsync(usuario);
-        if (!resultadoDaValidacao.IsValid)
-        {
-            Notificator.Handle(resultadoDaValidacao.Errors);
-            return false;
-        }
-
-        var usuarioComEmailExistente = await _usuarioRepository.ObterPorEmail(usuario.Email);
-        if (usuarioComEmailExistente != null)
-        {
-            Notificator.Handle("Já existe um usuário cadastrado com o email informado.");
-            return false;
-        }
-
-        return true;
-    }
-
     private async Task<bool> ValidacoesParaLogin(LoginDto dto)
     {
         var usuario = Mapper.Map<Usuario>(dto);
@@ -138,14 +103,5 @@ public class AuthService : BaseService, IAuthService
         }
 
         return true;
-    }
-
-    private async Task<bool> CommitChanges()
-    {
-        if (await _usuarioRepository.UnitOfWork.Commit())
-            return true;
-
-        Notificator.Handle("Ocorreu um erro ao salvar as alterações.");
-        return false;
     }
 }

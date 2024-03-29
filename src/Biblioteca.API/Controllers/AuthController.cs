@@ -1,13 +1,12 @@
 ﻿using Biblioteca.API.Responses;
 using Biblioteca.Application.Contracts.Services;
 using Biblioteca.Application.DTOs.Auth;
-using Biblioteca.Application.DTOs.Usuario;
 using Biblioteca.Application.Notifications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace Biblioteca.API.Controllers.Auth;
+namespace Biblioteca.API.Controllers;
 
 [AllowAnonymous]
 [Route("v{version:apiVersion}/[controller]")]
@@ -20,18 +19,8 @@ public class AuthController : BaseController
         _authService = authService;
     }
 
-    [HttpPost("Registrar")]
-    [SwaggerOperation(Summary = "Registrar usuário.", Tags = new[] { "Usuários - Auth" })]
-    [ProducesResponseType(typeof(UsuarioDto), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Registrar([FromBody] AdicionarUsuarioDto dto)
-    {
-        var registrarUsuario = await _authService.Registrar(dto);
-        return CreatedResponse("", registrarUsuario);
-    }
-
     [HttpPost("Login")]
-    [SwaggerOperation(Summary = "Login.", Tags = new[] { "Usuários - Auth" })]
+    [SwaggerOperation(Summary = "Login.", Tags = new[] { "Autenticação" })]
     [ProducesResponseType(typeof(TokenDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(UnauthorizedObjectResult), StatusCodes.Status401Unauthorized)]

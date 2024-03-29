@@ -12,6 +12,7 @@ public class ApplicationDbContext : DbContext, IUnitOfWork
     }
 
     public DbSet<Usuario> Usuarios { get; set; } = null!;
+    public DbSet<Livro> Livros { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
         => modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());

@@ -39,6 +39,7 @@ public static class DependencyInjection
 
         services
             .AddScoped<IAuthService, AuthService>()
-            .AddScoped<IUsuarioService, UsuarioService>();
+            .AddScoped<IUsuarioService, UsuarioService>()
+            .AddScoped<ILivroService, LivroService>();
     }
 }

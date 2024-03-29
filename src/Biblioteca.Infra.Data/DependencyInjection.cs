@@ -39,6 +39,7 @@ public static class DependencyInjection
     public static void RepositoryDependency(this IServiceCollection services)
     {
         services
-            .AddScoped<IUsuarioRepository, UsuarioRepository>();
+            .AddScoped<IUsuarioRepository, UsuarioRepository>()
+            .AddScoped<ILivroRepository, LivroRepository>();
     }
 }

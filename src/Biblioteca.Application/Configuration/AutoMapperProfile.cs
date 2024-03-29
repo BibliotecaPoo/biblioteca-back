@@ -12,12 +12,20 @@ public class AutoMapperProfile : Profile
         CreateMap<DTOs.Auth.LoginDto, Usuario>().ReverseMap();
 
         #endregion
-        
+
         #region Usuario
 
         CreateMap<DTOs.Usuario.UsuarioDto, Usuario>().ReverseMap();
         CreateMap<DTOs.Usuario.AdicionarUsuarioDto, Usuario>().ReverseMap();
         CreateMap<DTOs.Usuario.AtualizarUsuarioDto, Usuario>().ReverseMap();
+
+        #endregion
+
+        #region Livro
+
+        CreateMap<DTOs.Livro.LivroDto, Livro>().ReverseMap();
+        CreateMap<DTOs.Livro.AdicionarLivroDto, Livro>().ReverseMap();
+        CreateMap<DTOs.Livro.AtualizarLivroDto, Livro>().ReverseMap();
 
         #endregion
     }
