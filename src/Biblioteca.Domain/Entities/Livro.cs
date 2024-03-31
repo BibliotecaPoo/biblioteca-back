@@ -7,5 +7,5 @@ public class Livro : Entity
     public string Autor { get; set; } = null!;
     public string Editora { get; set; } = null!;
     public int AnoPublicacao { get; set; }
-    public string? CaminhoImagemCapa { get; set; }
+    public string? Capa { get; set; }
 }

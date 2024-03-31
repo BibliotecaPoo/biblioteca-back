@@ -36,7 +36,7 @@ public class LivroMapping : IEntityTypeConfiguration<Livro>
             .IsRequired();
 
         builder
-            .Property(l => l.CaminhoImagemCapa)
+            .Property(l => l.Capa)
             .IsRequired(false)
             .HasColumnType("VARCHAR(255)");
 

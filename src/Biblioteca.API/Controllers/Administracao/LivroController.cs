@@ -19,7 +19,7 @@ public class LivroController : MainController
         _livroService = livroService;
     }
 
-    [HttpPost("Adicionar")]
+    [HttpPost]
     [SwaggerOperation(Summary = "Adicionar um livro.", Tags = new[] { "Administração - Livros" })]
     [ProducesResponseType(typeof(LivroDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
@@ -29,18 +29,6 @@ public class LivroController : MainController
     {
         var adicionarLivro = await _livroService.Adicionar(dto);
         return CreatedResponse("", adicionarLivro);
-    }
-
-    [HttpPost("Adicionar-Capa/{id}")]
-    [SwaggerOperation(Summary = "Adicionar a capa de um livro.", Tags = new[] { "Administração - Livros" })]
-    [ProducesResponseType(typeof(LivroDto), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> AdicionarCapa(int id, [FromForm] ICollection<IFormFile>? files)
-    {
-        var adicionarCapa = await _livroService.AdicionarCapa(id, files);
-        return CreatedResponse("", adicionarCapa);
     }
 
     [HttpPut("{id}")]
@@ -54,6 +42,44 @@ public class LivroController : MainController
     {
         var atualizarLivro = await _livroService.Atualizar(id, dto);
         return OkResponse(atualizarLivro);
+    }
+
+    [HttpPut("Upload-Capa/{id}")]
+    [SwaggerOperation(Summary = "Adicionar/atualizar a capa de um livro.", Tags = new[] { "Administração - Livros" })]
+    [ProducesResponseType(typeof(LivroDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> UploadCapa(int id, [FromForm] ICollection<IFormFile>? files)
+    {
+        var adicionarCapa = await _livroService.UploadCapa(id, files);
+        return CreatedResponse("", adicionarCapa);
+    }
+
+    [HttpGet("Download-Capa/{id}")]
+    [SwaggerOperation(Summary = "Baixar a capa de um livro.", Tags = new[] { "Administração - Livros" })]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DownloadCapa(int id)
+    {
+        var livro = await _livroService.ObterPorId(id);
+        if (livro == null)
+            return NotFound();
+
+        if (string.IsNullOrEmpty(livro.Capa))
+            return BadRequest("Ainda não foi adicionada uma imagem de capa para essa livro.");
+
+        var caminhoCompleto = Path.Combine("../../../imagens", livro.Capa);
+        if (!System.IO.File.Exists(caminhoCompleto))
+            return NotFound();
+
+        var conteudo = "image/jpeg";
+        var nomeArquivo = livro.Capa;
+
+        return File(System.IO.File.OpenRead(caminhoCompleto), conteudo, nomeArquivo);
     }
 
     [HttpGet("Obter-Por-Id/{id}")]

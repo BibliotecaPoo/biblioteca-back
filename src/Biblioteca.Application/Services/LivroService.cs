@@ -30,10 +30,22 @@ public class LivroService : BaseService, ILivroService
         return await CommitChanges() ? Mapper.Map<LivroDto>(adicionarLivro) : null;
     }
 
-    public async Task<LivroDto?> AdicionarCapa(int id, ICollection<IFormFile>? files)
+    public async Task<LivroDto?> Atualizar(int id, AtualizarLivroDto dto)
     {
-        var livroExistente = await _livroRepository.ObterPorId(id);
-        if (livroExistente == null)
+        if (!await ValidacoesParaAtualizarLivro(id, dto))
+            return null;
+
+        var atualizarLivro = await _livroRepository.ObterPorId(id);
+        MappingParaAtualizarLivro(atualizarLivro!, dto);
+
+        _livroRepository.Atualizar(atualizarLivro!);
+        return await CommitChanges() ? Mapper.Map<LivroDto>(atualizarLivro) : null;
+    }
+
+    public async Task<LivroDto?> UploadCapa(int id, ICollection<IFormFile>? files)
+    {
+        var livro = await _livroRepository.ObterPorId(id);
+        if (livro == null)
         {
             Notificator.HandleNotFoundResource();
             return null;
@@ -47,34 +59,33 @@ public class LivroService : BaseService, ILivroService
 
         foreach (var file in files)
         {
-            var nomeArquivo = $"{Guid.NewGuid().ToString()}{Path.GetExtension(file.FileName)}";
-            var caminhoCompleto =
-                Path.Combine("C:/Users/Guilherme/Dev/projetos/biblioteca-back/src/Biblioteca.Application/Imagens",
-                    nomeArquivo);
+            if (!EhImagem(file))
+            {
+                Notificator.Handle("Apenas arquivos de imagem são permitidos.");
+                return null;
+            }
+
+            if (!string.IsNullOrEmpty(livro.Capa))
+            {
+                var caminhoImagemAnterior = Path.Combine("../../../imagens", livro.Capa);
+                if (File.Exists(caminhoImagemAnterior))
+                    File.Delete(caminhoImagemAnterior);
+            }
+
+            var nomeArquivo = DateTime.Now.Ticks + "_" + Path.GetFileName(file.FileName);
+            var caminhoCompleto = Path.Combine("../../../imagens", nomeArquivo);
 
             using (var stream = new FileStream(caminhoCompleto, FileMode.Create))
             {
                 await file.CopyToAsync(stream);
             }
 
-            livroExistente.CaminhoImagemCapa = nomeArquivo;
+            livro.Capa = nomeArquivo;
 
-            _livroRepository.Atualizar(livroExistente);
+            _livroRepository.Atualizar(livro);
         }
 
-        return await CommitChanges() ? Mapper.Map<LivroDto>(livroExistente) : null;
-    }
-
-    public async Task<LivroDto?> Atualizar(int id, AtualizarLivroDto dto)
-    {
-        if (!await ValidacoesParaAtualizarLivro(id, dto))
-            return null;
-
-        var atualizarLivro = await _livroRepository.ObterPorId(id);
-        MappingParaAtualizarLivro(atualizarLivro!, dto);
-
-        _livroRepository.Atualizar(atualizarLivro!);
-        return await CommitChanges() ? Mapper.Map<LivroDto>(atualizarLivro) : null;
+        return await CommitChanges() ? Mapper.Map<LivroDto>(livro) : null;
     }
 
     public async Task<LivroDto?> ObterPorId(int id)
@@ -169,6 +180,14 @@ public class LivroService : BaseService, ILivroService
 
         if (dto.AnoPublicacao.HasValue)
             livro.AnoPublicacao = (int)dto.AnoPublicacao;
+    }
+
+    private bool EhImagem(IFormFile file)
+    {
+        var extensoesPermitidas = new[] { ".jpg", ".jpeg", ".png" };
+        var extensao = Path.GetExtension(file.FileName).ToLowerInvariant();
+
+        return extensoesPermitidas.Contains(extensao);
     }
 
     private async Task<bool> CommitChanges()
