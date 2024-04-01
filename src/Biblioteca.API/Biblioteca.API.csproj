@@ -18,6 +18,7 @@
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.28" />
         <PackageReference Include="NetDevPack.Security.Jwt.AspNetCore" Version="8.1.1" />
         <PackageReference Include="NetDevPack.Security.Jwt.Core" Version="8.1.1" />
         <PackageReference Include="NetDevPack.Security.Jwt.Store.EntityFrameworkCore" Version="8.1.1" />
