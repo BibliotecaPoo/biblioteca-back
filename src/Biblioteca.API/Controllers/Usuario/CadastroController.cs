@@ -6,21 +6,21 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace Biblioteca.API.Controllers.UsuarioComum;
+namespace Biblioteca.API.Controllers.Usuario;
 
 [AllowAnonymous]
 [Route("v{version:apiVersion}/[controller]")]
-public class UsuarioComumController : BaseController
+public class CadastroController : BaseController
 {
     private readonly IUsuarioService _usuarioService;
 
-    public UsuarioComumController(INotificator notificator, IUsuarioService usuarioService) : base(notificator)
+    public CadastroController(INotificator notificator, IUsuarioService usuarioService) : base(notificator)
     {
         _usuarioService = usuarioService;
     }
 
     [HttpPost]
-    [SwaggerOperation(Summary = "Cadastro.", Tags = new[] { "Usuário comum" })]
+    [SwaggerOperation(Summary = "Cadastro.", Tags = new[] { "Usuário - Cadastro" })]
     [ProducesResponseType(typeof(UsuarioDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Cadastro([FromBody] AdicionarUsuarioDto dto)
