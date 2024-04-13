@@ -72,7 +72,7 @@ public class LivroController : MainController
         if (string.IsNullOrEmpty(livro.Capa))
             return BadRequest("Ainda não foi adicionada uma imagem de capa para essa livro.");
 
-        var caminhoCompleto = Path.Combine("../../../imagens", livro.Capa);
+        var caminhoCompleto = Path.Combine("/home/guilherme/dev/imagens", livro.Capa);
         if (!System.IO.File.Exists(caminhoCompleto))
             return NotFound();
 

@@ -67,13 +67,13 @@ public class LivroService : BaseService, ILivroService
 
             if (!string.IsNullOrEmpty(livro.Capa))
             {
-                var caminhoImagemAnterior = Path.Combine("../../../imagens", livro.Capa);
+                var caminhoImagemAnterior = Path.Combine("/home/guilherme/dev/imagens", livro.Capa);
                 if (File.Exists(caminhoImagemAnterior))
                     File.Delete(caminhoImagemAnterior);
             }
 
             var nomeArquivo = DateTime.Now.Ticks + "_" + Path.GetFileName(file.FileName);
-            var caminhoCompleto = Path.Combine("../../../imagens", nomeArquivo);
+            var caminhoCompleto = Path.Combine("/home/guilherme/dev/imagens", nomeArquivo);
 
             using (var stream = new FileStream(caminhoCompleto, FileMode.Create))
             {
