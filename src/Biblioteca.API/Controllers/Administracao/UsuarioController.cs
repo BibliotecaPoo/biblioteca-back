@@ -67,6 +67,18 @@ public class UsuarioController : MainController
         var obterUsuario = await _usuarioService.ObterPorEmail(email);
         return OkResponse(obterUsuario);
     }
+    
+    [HttpGet("Obter-Por-Matricula/{matricula}")]
+    [SwaggerOperation(Summary = "Obter um usuário por matrícula.", Tags = new[] { "Administração - Usuários" })]
+    [ProducesResponseType(typeof(UsuarioDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ObterPorMatricula(string matricula)
+    {
+        var obterUsuario = await _usuarioService.ObterPorMatricula(matricula);
+        return OkResponse(obterUsuario);
+    }
 
     [HttpGet("Obter-Todos")]
     [SwaggerOperation(Summary = "Obter todos os usuários.", Tags = new[] { "Administração - Usuários" })]

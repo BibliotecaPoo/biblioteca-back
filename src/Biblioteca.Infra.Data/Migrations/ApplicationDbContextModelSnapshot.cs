@@ -36,20 +36,23 @@ namespace Biblioteca.Infra.Data.Migrations
                         .IsRequired()
                         .HasColumnType("VARCHAR(50)");
 
-                    b.Property<string>("Capa")
+                    b.Property<string>("CaminhoCapa")
                         .HasColumnType("VARCHAR(255)");
 
                     b.Property<DateTime>("CriadoEm")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("DATETIME");
 
-                    b.Property<string>("Descricao")
+                    b.Property<string>("Edicao")
                         .IsRequired()
-                        .HasColumnType("VARCHAR(200)");
+                        .HasColumnType("VARCHAR(30)");
 
                     b.Property<string>("Editora")
                         .IsRequired()
                         .HasColumnType("VARCHAR(50)");
+
+                    b.Property<int>("QuantidadeExemplares")
+                        .HasColumnType("int");
 
                     b.Property<string>("Titulo")
                         .IsRequired()
@@ -82,6 +85,10 @@ namespace Biblioteca.Infra.Data.Migrations
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("VARCHAR(100)");
+
+                    b.Property<string>("Matricula")
+                        .IsRequired()
+                        .HasColumnType("CHAR(10)");
 
                     b.Property<string>("Nome")
                         .IsRequired()

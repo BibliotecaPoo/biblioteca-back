@@ -17,6 +17,11 @@ public class UsuarioMapping : IEntityTypeConfiguration<Usuario>
             .HasColumnType("VARCHAR(50)");
 
         builder
+            .Property(u => u.Matricula)
+            .IsRequired()
+            .HasColumnType("CHAR(10)");
+
+        builder
             .Property(u => u.Email)
             .IsRequired()
             .HasColumnType("VARCHAR(100)");

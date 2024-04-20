@@ -12,6 +12,12 @@ public class ValidadorParaAdicionarUsuario : AbstractValidator<Domain.Entities.U
             .Length(3, 50)
             .WithMessage("O nome deve conter entre {MinLength} e {MaxLength} caracteres.");
 
+        RuleFor(u => u.Matricula)
+            .NotNull()
+            .WithMessage("A matrícula não pode ser nula.")
+            .Length(10)
+            .WithMessage("A matrícula deve conter exatamente 10 dígitos.");
+
         RuleFor(u => u.Email)
             .NotNull()
             .WithMessage("O email não pode ser nulo.")

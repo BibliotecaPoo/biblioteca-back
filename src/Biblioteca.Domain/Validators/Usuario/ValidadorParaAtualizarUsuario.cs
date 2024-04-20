@@ -11,6 +11,11 @@ public class ValidadorParaAtualizarUsuario : AbstractValidator<Domain.Entities.U
             .WithMessage("O nome deve conter entre {MinLength} e {MaxLength} caracteres.")
             .When(u => !string.IsNullOrEmpty(u.Nome));
 
+        RuleFor(u => u.Matricula)
+            .Length(10)
+            .WithMessage("A matrícula deve conter exatamente 10 dígitos.")
+            .When(u => !string.IsNullOrEmpty(u.Matricula));
+
         RuleFor(u => u.Email)
             .EmailAddress()
             .WithMessage("O email fornecido não é válido.")

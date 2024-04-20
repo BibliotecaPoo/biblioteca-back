@@ -65,9 +65,9 @@ public class LivroService : BaseService, ILivroService
                 return null;
             }
 
-            if (!string.IsNullOrEmpty(livro.Capa))
+            if (!string.IsNullOrEmpty(livro.CaminhoCapa))
             {
-                var caminhoImagemAnterior = Path.Combine("/home/guilherme/dev/imagens", livro.Capa);
+                var caminhoImagemAnterior = Path.Combine("/home/guilherme/dev/imagens", livro.CaminhoCapa);
                 if (File.Exists(caminhoImagemAnterior))
                     File.Delete(caminhoImagemAnterior);
             }
@@ -80,7 +80,7 @@ public class LivroService : BaseService, ILivroService
                 await file.CopyToAsync(stream);
             }
 
-            livro.Capa = nomeArquivo;
+            livro.CaminhoCapa = nomeArquivo;
 
             _livroRepository.Atualizar(livro);
         }
@@ -96,6 +96,24 @@ public class LivroService : BaseService, ILivroService
 
         Notificator.HandleNotFoundResource();
         return null;
+    }
+
+    public async Task<List<LivroDto>> ObterPorTitulo(string titulo)
+    {
+        var obterLivros = await _livroRepository.ObterPorTitulo(titulo);
+        return Mapper.Map<List<LivroDto>>(obterLivros);
+    }
+
+    public async Task<List<LivroDto>> ObterPorAutor(string autor)
+    {
+        var obterLivros = await _livroRepository.ObterPorAutor(autor);
+        return Mapper.Map<List<LivroDto>>(obterLivros);
+    }
+
+    public async Task<List<LivroDto>> ObterPorEditora(string editora)
+    {
+        var obterLivros = await _livroRepository.ObterPorEditora(editora);
+        return Mapper.Map<List<LivroDto>>(obterLivros);
     }
 
     public async Task<List<LivroDto>> ObterTodos()
@@ -116,10 +134,11 @@ public class LivroService : BaseService, ILivroService
             return false;
         }
 
-        var livroComTituloExistente = await _livroRepository.FirstOrDefault(l => l.Titulo == dto.Titulo);
-        if (livroComTituloExistente != null)
+        var livroComTituloEEdicaoExistente = await _livroRepository.FirstOrDefault(l => l.Titulo == dto.Titulo
+            && l.Edicao == dto.Edicao);
+        if (livroComTituloEEdicaoExistente != null)
         {
-            Notificator.Handle("Já foi cadastrado um livro com o título informado.");
+            Notificator.Handle("Já foi cadastrado um livro com o título e a edição informados.");
             return false;
         }
 
@@ -151,12 +170,13 @@ public class LivroService : BaseService, ILivroService
             return false;
         }
 
-        if (!string.IsNullOrEmpty(livro.Titulo))
+        if (!string.IsNullOrEmpty(livro.Titulo) && !string.IsNullOrEmpty(livro.Edicao))
         {
-            var livroComTituloExistente = await _livroRepository.FirstOrDefault(l => l.Titulo == dto.Titulo);
-            if (livroComTituloExistente != null)
+            var livroComTituloEEdicaoExistente = await _livroRepository.FirstOrDefault(l => l.Titulo == dto.Titulo
+                && l.Edicao == dto.Edicao);
+            if (livroComTituloEEdicaoExistente != null)
             {
-                Notificator.Handle("Já foi cadastrado um livro com o título informado.");
+                Notificator.Handle("Já foi cadastrado um livro com o título e a edição informados.");
                 return false;
             }
         }
@@ -169,11 +189,11 @@ public class LivroService : BaseService, ILivroService
         if (!string.IsNullOrEmpty(dto.Titulo))
             livro.Titulo = dto.Titulo;
 
-        if (!string.IsNullOrEmpty(dto.Descricao))
-            livro.Descricao = dto.Descricao;
-
         if (!string.IsNullOrEmpty(dto.Autor))
             livro.Autor = dto.Autor;
+
+        if (!string.IsNullOrEmpty(dto.Edicao))
+            livro.Edicao = dto.Edicao;
 
         if (!string.IsNullOrEmpty(dto.Editora))
             livro.Editora = dto.Editora;

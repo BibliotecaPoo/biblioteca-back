@@ -23,6 +23,7 @@
         <PackageReference Include="NetDevPack.Security.Jwt.Core" Version="8.1.1" />
         <PackageReference Include="NetDevPack.Security.Jwt.Store.EntityFrameworkCore" Version="8.1.1" />
         <PackageReference Include="NetDevPack.Security.Jwt.Store.FileSystem" Version="8.1.1" />
+        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.2" />
         <PackageReference Include="StackExchange.Redis" Version="2.7.33" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
         <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.5.0" />

@@ -4,7 +4,7 @@
 
 namespace Biblioteca.Infra.Data.Migrations
 {
-    public partial class AddDefaultAdm : Migration
+    public partial class AdicionandoAdministradorPadrao : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -12,10 +12,10 @@ namespace Biblioteca.Infra.Data.Migrations
             
             migrationBuilder.InsertData(
                 table: "Usuarios",
-                columns: new[] { "Id", "Nome", "Email", "Senha", "Ativo", "SuperUsuario" },
+                columns: new[] { "Id", "Nome", "Matricula", "Email", "Senha", "Ativo", "SuperUsuario" },
                 values: new object[,]
                 {
-                    { 1, "Administrador", "admin@admin.com", senha, true, true }
+                    { 1, "Administrador", "0000000000", "admin@admin.com", senha, true, true }
                 });
         }
 

@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Biblioteca.Infra.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240318131743_AddDefaultAdm")]
-    partial class AddDefaultAdm
+    [Migration("20240420190221_AdicionandoMapeamentos")]
+    partial class AdicionandoMapeamentos
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -20,6 +20,50 @@ namespace Biblioteca.Infra.Data.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "6.0.28")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
+
+            modelBuilder.Entity("Biblioteca.Domain.Entities.Livro", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("AnoPublicacao")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("AtualizadoEm")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("DATETIME");
+
+                    b.Property<string>("Autor")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(50)");
+
+                    b.Property<string>("CaminhoCapa")
+                        .HasColumnType("VARCHAR(255)");
+
+                    b.Property<DateTime>("CriadoEm")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("DATETIME");
+
+                    b.Property<string>("Edicao")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(30)");
+
+                    b.Property<string>("Editora")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(50)");
+
+                    b.Property<int>("QuantidadeExemplares")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Titulo")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Livros");
+                });
 
             modelBuilder.Entity("Biblioteca.Domain.Entities.Usuario", b =>
                 {
@@ -43,6 +87,10 @@ namespace Biblioteca.Infra.Data.Migrations
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("VARCHAR(100)");
+
+                    b.Property<string>("Matricula")
+                        .IsRequired()
+                        .HasColumnType("CHAR(10)");
 
                     b.Property<string>("Nome")
                         .IsRequired()

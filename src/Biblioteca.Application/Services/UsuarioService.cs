@@ -65,6 +65,16 @@ public class UsuarioService : BaseService, IUsuarioService
         return null;
     }
 
+    public async Task<UsuarioDto?> ObterPorMatricula(string matricula)
+    {
+        var obterUsuario = await _usuarioRepository.ObterPorMatricula(matricula);
+        if (obterUsuario != null)
+            return Mapper.Map<UsuarioDto>(obterUsuario);
+
+        Notificator.HandleNotFoundResource();
+        return null;
+    }
+
     public async Task<List<UsuarioDto>> ObterTodos()
     {
         var obterUsuarios = await _usuarioRepository.ObterTodos();
@@ -113,6 +123,13 @@ public class UsuarioService : BaseService, IUsuarioService
             return false;
         }
 
+        var usuarioComMatriculaExistente = await _usuarioRepository.ObterPorMatricula(usuario.Matricula);
+        if (usuarioComMatriculaExistente != null)
+        {
+            Notificator.Handle("Já existe um usuário cadastrado com a matrícula informada.");
+            return false;
+        }
+
         var usuarioComEmailExistente = await _usuarioRepository.ObterPorEmail(usuario.Email);
         if (usuarioComEmailExistente != null)
         {
@@ -148,6 +165,16 @@ public class UsuarioService : BaseService, IUsuarioService
             return false;
         }
 
+        if (!string.IsNullOrEmpty(usuario.Matricula))
+        {
+            var usuarioComMatriculaExistente = await _usuarioRepository.ObterPorMatricula(usuario.Matricula);
+            if (usuarioComMatriculaExistente != null)
+            {
+                Notificator.Handle("Já existe um usuário cadastrado com a matrícula informada.");
+                return false;
+            }
+        }
+
         if (!string.IsNullOrEmpty(usuario.Email))
         {
             var usuarioComEmailExistente = await _usuarioRepository.ObterPorEmail(usuario.Email);
@@ -158,7 +185,8 @@ public class UsuarioService : BaseService, IUsuarioService
             }
         }
 
-        if (string.IsNullOrEmpty(usuario.Nome) && string.IsNullOrEmpty(usuario.Email) &&
+        if (string.IsNullOrEmpty(usuario.Nome) && string.IsNullOrEmpty(usuario.Matricula) &&
+            string.IsNullOrEmpty(usuario.Email) &&
             string.IsNullOrEmpty(usuario.Senha))
         {
             Notificator.Handle("Nenhum campo fornecido para atualização.");
@@ -172,6 +200,9 @@ public class UsuarioService : BaseService, IUsuarioService
     {
         if (!string.IsNullOrEmpty(dto.Nome))
             usuario.Nome = dto.Nome;
+
+        if (!string.IsNullOrEmpty(dto.Matricula))
+            usuario.Matricula = dto.Matricula;
 
         if (!string.IsNullOrEmpty(dto.Email))
             usuario.Email = dto.Email;

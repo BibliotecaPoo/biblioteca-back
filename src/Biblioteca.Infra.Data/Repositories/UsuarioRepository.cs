@@ -23,6 +23,9 @@ public class UsuarioRepository : Repository<Usuario>, IUsuarioRepository
     public async Task<Usuario?> ObterPorEmail(string email)
         => await Context.Usuarios.AsNoTrackingWithIdentityResolution().FirstOrDefaultAsync(u => u.Email == email);
 
+    public async Task<Usuario?> ObterPorMatricula(string matricula)
+        => await Context.Usuarios.AsNoTrackingWithIdentityResolution().FirstOrDefaultAsync(u => u.Matricula == matricula);
+
     public async Task<List<Usuario>> ObterTodos()
         => await Context.Usuarios.AsNoTrackingWithIdentityResolution().ToListAsync();
 }

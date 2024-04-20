@@ -69,15 +69,15 @@ public class LivroController : MainController
         if (livro == null)
             return NotFound();
 
-        if (string.IsNullOrEmpty(livro.Capa))
+        if (string.IsNullOrEmpty(livro.CaminhoCapa))
             return BadRequest("Ainda não foi adicionada uma imagem de capa para essa livro.");
 
-        var caminhoCompleto = Path.Combine("/home/guilherme/dev/imagens", livro.Capa);
+        var caminhoCompleto = Path.Combine("/home/guilherme/dev/imagens", livro.CaminhoCapa);
         if (!System.IO.File.Exists(caminhoCompleto))
             return NotFound();
 
         var conteudo = "image/jpeg";
-        var nomeArquivo = livro.Capa;
+        var nomeArquivo = livro.CaminhoCapa;
 
         return File(System.IO.File.OpenRead(caminhoCompleto), conteudo, nomeArquivo);
     }
@@ -92,6 +92,39 @@ public class LivroController : MainController
     {
         var obterLivro = await _livroService.ObterPorId(id);
         return OkResponse(obterLivro);
+    }
+
+    [HttpGet("Obter-Por-Titulo/{titulo}")]
+    [SwaggerOperation(Summary = "Obter livros com o mesmo título.", Tags = new[] { "Administração - Livros" })]
+    [ProducesResponseType(typeof(LivroDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> ObterPorTitulo(string titulo)
+    {
+        var obterLivros = await _livroService.ObterPorTitulo(titulo);
+        return OkResponse(obterLivros);
+    }
+
+    [HttpGet("Obter-Por-Autor/{autor}")]
+    [SwaggerOperation(Summary = "Obter livros com o mesmo autor.", Tags = new[] { "Administração - Livros" })]
+    [ProducesResponseType(typeof(LivroDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> ObterPorAutor(string autor)
+    {
+        var obterLivros = await _livroService.ObterPorAutor(autor);
+        return OkResponse(obterLivros);
+    }
+
+    [HttpGet("Obter-Por-Editora/{editora}")]
+    [SwaggerOperation(Summary = "Obter livros com a mesma editora.", Tags = new[] { "Administração - Livros" })]
+    [ProducesResponseType(typeof(LivroDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> ObterPorEditora(string editora)
+    {
+        var obterLivros = await _livroService.ObterPorEditora(editora);
+        return OkResponse(obterLivros);
     }
 
     [HttpGet("Obter-Todos")]
