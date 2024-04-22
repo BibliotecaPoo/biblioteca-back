@@ -9,7 +9,7 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace Biblioteca.API.Controllers;
 
 [AllowAnonymous]
-[Route("v{version:apiVersion}/[controller]")]
+[Route("api/v{version:apiVersion}/[controller]")]
 public class AuthController : BaseController
 {
     private readonly IAuthService _authService;

@@ -10,7 +10,7 @@ namespace Biblioteca.API.Controllers;
 [Authorize]
 [ApiController]
 [ApiVersion("1.0")]
-[Route("v{version:apiVersion}/[controller]")]
+[Route("api/v{version:apiVersion}/[controller]")]
 public abstract class BaseController : Controller
 {
     private readonly INotificator _notificator;
