@@ -20,11 +20,13 @@ public class UsuarioRepository : Repository<Usuario>, IUsuarioRepository
     public async Task<Usuario?> ObterPorId(int id)
         => await Context.Usuarios.AsNoTrackingWithIdentityResolution().FirstOrDefaultAsync(u => u.Id == id);
 
-    public async Task<Usuario?> ObterPorEmail(string email)
-        => await Context.Usuarios.AsNoTrackingWithIdentityResolution().FirstOrDefaultAsync(u => u.Email == email);
+    public async Task<List<Usuario>> ObterPorEmail(string email)
+        => await Context.Usuarios.AsNoTrackingWithIdentityResolution().Where(u => u.Email.Contains(email))
+            .ToListAsync();
 
-    public async Task<Usuario?> ObterPorMatricula(string matricula)
-        => await Context.Usuarios.AsNoTrackingWithIdentityResolution().FirstOrDefaultAsync(u => u.Matricula == matricula);
+    public async Task<List<Usuario>> ObterPorMatricula(string matricula)
+        => await Context.Usuarios.AsNoTrackingWithIdentityResolution().Where(u => u.Matricula.Contains(matricula))
+            .ToListAsync();
 
     public async Task<List<Usuario>> ObterTodos()
         => await Context.Usuarios.AsNoTrackingWithIdentityResolution().ToListAsync();

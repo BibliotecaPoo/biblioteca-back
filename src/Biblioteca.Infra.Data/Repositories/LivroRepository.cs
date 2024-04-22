@@ -21,13 +21,13 @@ public class LivroRepository : Repository<Livro>, ILivroRepository
         => await Context.Livros.AsNoTrackingWithIdentityResolution().FirstOrDefaultAsync(l => l.Id == id);
 
     public async Task<List<Livro>> ObterPorTitulo(string titulo)
-        => await Context.Livros.AsNoTrackingWithIdentityResolution().Where(l => l.Titulo == titulo).ToListAsync();
+        => await Context.Livros.AsNoTrackingWithIdentityResolution().Where(l => l.Titulo.Contains(titulo)).ToListAsync();
 
     public async Task<List<Livro>> ObterPorAutor(string autor)
-        => await Context.Livros.AsNoTrackingWithIdentityResolution().Where(l => l.Autor == autor).ToListAsync();
+        => await Context.Livros.AsNoTrackingWithIdentityResolution().Where(l => l.Autor.Contains(autor)).ToListAsync();
 
     public async Task<List<Livro>> ObterPorEditora(string editora)
-        => await Context.Livros.AsNoTrackingWithIdentityResolution().Where(l => l.Editora == editora).ToListAsync();
+        => await Context.Livros.AsNoTrackingWithIdentityResolution().Where(l => l.Editora.Contains(editora)).ToListAsync();
 
     public async Task<List<Livro>> ObterTodos()
         => await Context.Livros.AsNoTrackingWithIdentityResolution().ToListAsync();

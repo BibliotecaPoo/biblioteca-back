@@ -25,12 +25,5 @@ public class ValidadorParaAtualizarLivro : AbstractValidator<Entities.Livro>
             .Length(3, 50)
             .WithMessage("A editora deve conter entre {MinLength} e {MaxLength} caracteres.")
             .When(l => !string.IsNullOrEmpty(l.Editora));
-
-        RuleFor(l => l.AnoPublicacao)
-            .GreaterThanOrEqualTo(1000)
-            .WithMessage("O ano de publicação deve ser a partir do ano 1000.")
-            .LessThanOrEqualTo(DateTime.Now.Year)
-            .WithMessage("O ano de publicação não pode ser no futuro.")
-            .When(l => !string.IsNullOrEmpty(l.AnoPublicacao.ToString()));
     }
 }

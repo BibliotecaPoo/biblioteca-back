@@ -7,8 +7,8 @@ public interface IUsuarioService
     Task<UsuarioDto?> Adicionar(AdicionarUsuarioDto dto);
     Task<UsuarioDto?> Atualizar(int id, AtualizarUsuarioDto dto);
     Task<UsuarioDto?> ObterPorId(int id);
-    Task<UsuarioDto?> ObterPorEmail(string email);
-    Task<UsuarioDto?> ObterPorMatricula(string matricula);
+    Task<List<UsuarioDto>> ObterPorEmail(string email);
+    Task<List<UsuarioDto>> ObterPorMatricula(string matricula);
     Task<List<UsuarioDto>> ObterTodos();
     Task Reativar(int id);
     Task Desativar(int id);

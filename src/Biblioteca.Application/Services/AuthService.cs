@@ -39,7 +39,7 @@ public class AuthService : BaseService, IAuthService
         if (!await ValidacoesParaLogin(dto))
             return null;
 
-        var usuario = await _usuarioRepository.ObterPorEmail(dto.Email);
+        var usuario = await _usuarioRepository.FirstOrDefault(u => u.Email == dto.Email);
         if (usuario == null || !usuario.Ativo)
         {
             Notificator.HandleNotFoundResource();

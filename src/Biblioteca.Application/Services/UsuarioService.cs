@@ -55,24 +55,16 @@ public class UsuarioService : BaseService, IUsuarioService
         return null;
     }
 
-    public async Task<UsuarioDto?> ObterPorEmail(string email)
+    public async Task<List<UsuarioDto>> ObterPorEmail(string email)
     {
-        var obterUsuario = await _usuarioRepository.ObterPorEmail(email);
-        if (obterUsuario != null)
-            return Mapper.Map<UsuarioDto>(obterUsuario);
-
-        Notificator.HandleNotFoundResource();
-        return null;
+        var obterUsuarios = await _usuarioRepository.ObterPorEmail(email);
+        return Mapper.Map<List<UsuarioDto>>(obterUsuarios);
     }
 
-    public async Task<UsuarioDto?> ObterPorMatricula(string matricula)
+    public async Task<List<UsuarioDto>> ObterPorMatricula(string matricula)
     {
-        var obterUsuario = await _usuarioRepository.ObterPorMatricula(matricula);
-        if (obterUsuario != null)
-            return Mapper.Map<UsuarioDto>(obterUsuario);
-
-        Notificator.HandleNotFoundResource();
-        return null;
+        var obterUsuarios = await _usuarioRepository.ObterPorMatricula(matricula);
+        return Mapper.Map<List<UsuarioDto>>(obterUsuarios);
     }
 
     public async Task<List<UsuarioDto>> ObterTodos()
@@ -123,14 +115,14 @@ public class UsuarioService : BaseService, IUsuarioService
             return false;
         }
 
-        var usuarioComMatriculaExistente = await _usuarioRepository.ObterPorMatricula(usuario.Matricula);
+        var usuarioComMatriculaExistente = await _usuarioRepository.FirstOrDefault(u => u.Matricula == dto.Matricula);
         if (usuarioComMatriculaExistente != null)
         {
             Notificator.Handle("Já existe um usuário cadastrado com a matrícula informada.");
             return false;
         }
 
-        var usuarioComEmailExistente = await _usuarioRepository.ObterPorEmail(usuario.Email);
+        var usuarioComEmailExistente = await _usuarioRepository.FirstOrDefault(u => u.Email == dto.Email);
         if (usuarioComEmailExistente != null)
         {
             Notificator.Handle("Já existe um usuário cadastrado com o email informado.");
@@ -165,9 +157,9 @@ public class UsuarioService : BaseService, IUsuarioService
             return false;
         }
 
-        if (!string.IsNullOrEmpty(usuario.Matricula))
+        if (!string.IsNullOrEmpty(dto.Matricula))
         {
-            var usuarioComMatriculaExistente = await _usuarioRepository.ObterPorMatricula(usuario.Matricula);
+            var usuarioComMatriculaExistente = await _usuarioRepository.FirstOrDefault(u => u.Matricula == dto.Matricula);
             if (usuarioComMatriculaExistente != null)
             {
                 Notificator.Handle("Já existe um usuário cadastrado com a matrícula informada.");
@@ -175,9 +167,9 @@ public class UsuarioService : BaseService, IUsuarioService
             }
         }
 
-        if (!string.IsNullOrEmpty(usuario.Email))
+        if (!string.IsNullOrEmpty(dto.Email))
         {
-            var usuarioComEmailExistente = await _usuarioRepository.ObterPorEmail(usuario.Email);
+            var usuarioComEmailExistente = await _usuarioRepository.FirstOrDefault(u => u.Email == dto.Email);
             if (usuarioComEmailExistente != null)
             {
                 Notificator.Handle("Já existe um usuário cadastrado com o email informado.");
@@ -185,9 +177,8 @@ public class UsuarioService : BaseService, IUsuarioService
             }
         }
 
-        if (string.IsNullOrEmpty(usuario.Nome) && string.IsNullOrEmpty(usuario.Matricula) &&
-            string.IsNullOrEmpty(usuario.Email) &&
-            string.IsNullOrEmpty(usuario.Senha))
+        if (string.IsNullOrEmpty(dto.Nome) && string.IsNullOrEmpty(dto.Matricula) && string.IsNullOrEmpty(dto.Email) &&
+            string.IsNullOrEmpty(dto.Senha))
         {
             Notificator.Handle("Nenhum campo fornecido para atualização.");
             return false;

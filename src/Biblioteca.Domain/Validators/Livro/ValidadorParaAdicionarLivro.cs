@@ -33,15 +33,15 @@ public class ValidadorParaAdicionarLivro : AbstractValidator<Entities.Livro>
         RuleFor(l => l.AnoPublicacao)
             .NotNull()
             .WithMessage("O ano de publicação não pode ser nulo.")
-            .GreaterThanOrEqualTo(1000)
-            .WithMessage("O ano de publicação deve ser a partir do ano 1000.")
+            .GreaterThan(0)
+            .WithMessage("O ano de publicação deve ser maior que 0.")
             .LessThanOrEqualTo(DateTime.Now.Year)
             .WithMessage("O ano de publicação não pode ser no futuro.");
 
         RuleFor(l => l.QuantidadeExemplares)
             .NotNull()
             .WithMessage("A quantidade de exemplares não pode ser nula.")
-            .GreaterThanOrEqualTo(0)
+            .GreaterThan(0)
             .WithMessage("A quantidade de exemplares deve ser maior que 0.");
     }
 }

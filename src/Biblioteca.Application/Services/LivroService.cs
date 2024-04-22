@@ -170,7 +170,7 @@ public class LivroService : BaseService, ILivroService
             return false;
         }
 
-        if (!string.IsNullOrEmpty(livro.Titulo) && !string.IsNullOrEmpty(livro.Edicao))
+        if (!string.IsNullOrEmpty(dto.Titulo) && !string.IsNullOrEmpty(dto.Edicao))
         {
             var livroComTituloEEdicaoExistente = await _livroRepository.FirstOrDefault(l => l.Titulo == dto.Titulo
                 && l.Edicao == dto.Edicao);
@@ -179,6 +179,37 @@ public class LivroService : BaseService, ILivroService
                 Notificator.Handle("Já foi cadastrado um livro com o título e a edição informados.");
                 return false;
             }
+        }
+
+        if (dto.AnoPublicacao.HasValue)
+        {
+            if (dto.AnoPublicacao == 0 || dto.AnoPublicacao < 0)
+            {
+                Notificator.Handle("O ano de publicação deve ser maior que 0.");
+                return false;
+            }
+
+            if (dto.AnoPublicacao > DateTime.Now.Year)
+            {
+                Notificator.Handle("O ano de publicação não pode ser no futuro.");
+                return false;
+            }
+        }
+
+        if (dto.QuantidadeExemplares.HasValue)
+        {
+            if (dto.QuantidadeExemplares == 0 || dto.QuantidadeExemplares < 0)
+            {
+                Notificator.Handle("A quantidade de exemplares deve ser maior que 0.");
+                return false;
+            }
+        }
+
+        if (string.IsNullOrEmpty(dto.Titulo) && string.IsNullOrEmpty(dto.Autor) && string.IsNullOrEmpty(dto.Edicao) &&
+            string.IsNullOrEmpty(dto.Editora) && !dto.AnoPublicacao.HasValue && !dto.QuantidadeExemplares.HasValue)
+        {
+            Notificator.Handle("Nenhum campo fornecido para atualização.");
+            return false;
         }
 
         return true;
@@ -200,6 +231,9 @@ public class LivroService : BaseService, ILivroService
 
         if (dto.AnoPublicacao.HasValue)
             livro.AnoPublicacao = (int)dto.AnoPublicacao;
+
+        if (dto.QuantidadeExemplares.HasValue)
+            livro.QuantidadeExemplares = (int)dto.QuantidadeExemplares;
     }
 
     private bool EhImagem(IFormFile file)
