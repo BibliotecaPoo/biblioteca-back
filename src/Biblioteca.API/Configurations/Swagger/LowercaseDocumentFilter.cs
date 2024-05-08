@@ -12,6 +12,7 @@ internal class LowercaseDocumentFilter : IDocumentFilter
         //	generate the new keys
         var newPaths = new Dictionary<string, OpenApiPathItem>();
         var removeKeys = new List<string>();
+
         foreach (var path in paths)
         {
             var newKey = path.Key.ToLower();

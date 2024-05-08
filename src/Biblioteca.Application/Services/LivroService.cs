@@ -4,6 +4,7 @@ using Biblioteca.Application.DTOs.Livro;
 using Biblioteca.Application.Notifications;
 using Biblioteca.Domain.Contracts.Repositories;
 using Biblioteca.Domain.Entities;
+using Biblioteca.Domain.Enums;
 using Biblioteca.Domain.Validators.Livro;
 using Microsoft.AspNetCore.Http;
 
@@ -25,8 +26,10 @@ public class LivroService : BaseService, ILivroService
             return null;
 
         var adicionarLivro = Mapper.Map<Livro>(dto);
-        _livroRepository.Adicionar(adicionarLivro);
+        adicionarLivro.QuantidadeExemplaresDisponiveisParaEmprestimo = adicionarLivro.QuantidadeExemplares;
+        adicionarLivro.StatusLivro = EStatusLivro.Disponivel;
 
+        _livroRepository.Adicionar(adicionarLivro);
         return await CommitChanges() ? Mapper.Map<LivroDto>(adicionarLivro) : null;
     }
 
@@ -147,16 +150,17 @@ public class LivroService : BaseService, ILivroService
 
     private async Task<bool> ValidacoesParaAtualizarLivro(int id, AtualizarLivroDto dto)
     {
-        if (id != dto.Id)
-        {
-            Notificator.Handle("Os ids não conferem.");
-            return false;
-        }
-
         var livroExistente = await _livroRepository.ObterPorId(id);
         if (livroExistente == null)
         {
             Notificator.HandleNotFoundResource();
+            return false;
+        }
+
+        if (livroExistente.Emprestimos.Exists(e => e.StatusEmprestimo == EStatusEmprestimo.Emprestado 
+                                                   || e.StatusEmprestimo == EStatusEmprestimo.Renovado))
+        {
+            Notificator.Handle("Não é possível atualizar um livro que tenha algum exemplar emprestado ou renovado.");
             return false;
         }
 
@@ -233,7 +237,10 @@ public class LivroService : BaseService, ILivroService
             livro.AnoPublicacao = (int)dto.AnoPublicacao;
 
         if (dto.QuantidadeExemplares.HasValue)
+        {
             livro.QuantidadeExemplares = (int)dto.QuantidadeExemplares;
+            livro.QuantidadeExemplaresDisponiveisParaEmprestimo = livro.QuantidadeExemplares;
+        }
     }
 
     private bool EhImagem(IFormFile file)

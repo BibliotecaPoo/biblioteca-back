@@ -24,23 +24,11 @@ builder
 
 builder
     .Services
-    .SetupSettings(builder.Configuration);
-
-builder
-    .Services
-    .AddResponseCompression(options => { options.EnableForHttps = true; });
+    .AddAuthenticationConfig(builder.Configuration);
 
 builder
     .Services
     .AddApiConfiguration();
-
-builder
-    .Services
-    .ConfigureApplication(builder.Configuration);
-
-builder
-    .Services
-    .AddServices();
 
 builder
     .Services
@@ -52,19 +40,25 @@ builder
 
 builder
     .Services
-    .AddAuthenticationConfig(builder.Configuration, builder.Environment);
+    .SetupSettings(builder.Configuration);
+
+builder
+    .Services
+    .ConfigureApplication(builder.Configuration);
+
+builder
+    .Services
+    .AddServices();
 
 var app = builder.Build();
 
-app.UseApiConfiguration(app.Services, app.Environment);
+app.UseApiConfiguration();
 
-if (!app.Environment.IsProduction())
+if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseHttpsRedirection();
 
 app.UseAuthenticationConfig();
 

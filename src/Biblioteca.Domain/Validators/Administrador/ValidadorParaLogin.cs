@@ -1,16 +1,16 @@
 ﻿using FluentValidation;
 
-namespace Biblioteca.Domain.Validators.Usuario;
+namespace Biblioteca.Domain.Validators.Administrador;
 
-public class ValidadorParaLogin : AbstractValidator<Domain.Entities.Usuario>
+public class ValidadorParaLogin : AbstractValidator<Domain.Entities.Administrador>
 {
     public ValidadorParaLogin()
     {
-        RuleFor(u => u.Email)
+        RuleFor(a => a.Email)
             .NotEmpty()
             .WithMessage("O email não pode ser vazio.");
 
-        RuleFor(u => u.Senha)
+        RuleFor(a => a.Senha)
             .NotEmpty()
             .WithMessage("A senha não pode ser vazia.");
     }

@@ -17,7 +17,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Biblioteca.Core\Biblioteca.Core.csproj" />
       <ProjectReference Include="..\Biblioteca.Domain\Biblioteca.Domain.csproj" />
     </ItemGroup>
 

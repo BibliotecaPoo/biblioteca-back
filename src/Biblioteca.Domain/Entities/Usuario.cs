@@ -1,11 +1,13 @@
 ﻿namespace Biblioteca.Domain.Entities;
 
-public class Usuario : Entity
+public class Usuario : Pessoa
 {
-    public string Nome { get; set; } = null!;
     public string Matricula { get; set; } = null!;
-    public string Email { get; set; } = null!;
-    public string Senha { get; set; } = null!;
-    public bool Ativo { get; set; }
-    public bool? SuperUsuario { get; set; }
+    public bool Bloqueado { get; set; }
+    public int? DiasBloqueado { get; set; }
+    public DateTime? DataInicioBloqueio { get; set; }
+    public DateTime? DataFimBloqueio { get; set; }
+
+    // Relation
+    public virtual List<Emprestimo> Emprestimos { get; set; } = new();
 }

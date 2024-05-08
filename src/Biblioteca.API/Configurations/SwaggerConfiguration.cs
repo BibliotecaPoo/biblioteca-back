@@ -13,6 +13,7 @@ public static class SwaggerConfiguration
         services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 
         services.AddEndpointsApiExplorer();
+
         services.AddSwaggerGen(options =>
         {
             options.EnableAnnotations();
@@ -33,6 +34,7 @@ public static class SwaggerConfiguration
                 In = ParameterLocation.Header,
                 Description = "Insira o token JWT desta maneira: Bearer {seu token}"
             });
+
             options.AddSecurityRequirement(new OpenApiSecurityRequirement
             {
                 {
@@ -59,8 +61,7 @@ public static class SwaggerConfiguration
         {
             foreach (var groupName in provider.ApiVersionDescriptions.Select(c => c.GroupName))
             {
-                options.SwaggerEndpoint($"/swagger/{groupName}/swagger.json",
-                    groupName.ToUpperInvariant());
+                options.SwaggerEndpoint($"/swagger/{groupName}/swagger.json", groupName.ToUpperInvariant());
             }
         });
     }

@@ -9,7 +9,7 @@ public class AutoMapperProfile : Profile
     {
         #region Auth
 
-        CreateMap<DTOs.Auth.LoginDto, Usuario>().ReverseMap();
+        CreateMap<DTOs.Auth.LoginDto, Administrador>().ReverseMap();
 
         #endregion
 
@@ -26,6 +26,13 @@ public class AutoMapperProfile : Profile
         CreateMap<DTOs.Livro.LivroDto, Livro>().ReverseMap();
         CreateMap<DTOs.Livro.AdicionarLivroDto, Livro>().ReverseMap();
         CreateMap<DTOs.Livro.AtualizarLivroDto, Livro>().ReverseMap();
+
+        #endregion
+
+        #region Emprestimo
+
+        CreateMap<DTOs.Emprestimo.EmprestimoDto, Emprestimo>().ReverseMap();
+        CreateMap<DTOs.Emprestimo.RealizarEmprestimoDto, Emprestimo>().ReverseMap();
 
         #endregion
     }

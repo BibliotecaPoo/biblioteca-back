@@ -1,9 +1,6 @@
-﻿using Biblioteca.Core.Authorization;
-using Biblioteca.Core.Extensions;
-using Biblioteca.Domain.Contracts.Repositories;
+﻿using Biblioteca.Domain.Contracts.Repositories;
 using Biblioteca.Infra.Data.Context;
 using Biblioteca.Infra.Data.Repositories;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,17 +11,6 @@ public static class DependencyInjection
 {
     public static void ConfigureDbContext(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddHttpContextAccessor();
-
-        services.AddScoped<IAuthenticatedUser>(sp =>
-        {
-            var httpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
-
-            return httpContextAccessor.UsuarioAutenticado()
-                ? new AuthenticatedUser(httpContextAccessor)
-                : new AuthenticatedUser();
-        });
-
         services.AddDbContext<ApplicationDbContext>(options =>
         {
             var connectionString = configuration.GetConnectionString("DefaultConnection");
@@ -39,7 +25,9 @@ public static class DependencyInjection
     public static void RepositoryDependency(this IServiceCollection services)
     {
         services
+            .AddScoped<IAdministradorRepository, AdministradorRepository>()
             .AddScoped<IUsuarioRepository, UsuarioRepository>()
-            .AddScoped<ILivroRepository, LivroRepository>();
+            .AddScoped<ILivroRepository, LivroRepository>()
+            .AddScoped<IEmprestimoRepository, EmprestimoRepository>();
     }
 }

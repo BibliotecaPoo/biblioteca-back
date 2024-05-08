@@ -6,11 +6,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace Biblioteca.API.Controllers.Administracao;
+namespace Biblioteca.API.Controllers;
 
 [Authorize]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class UsuarioController : MainController
+public class UsuarioController : BaseController
 {
     private readonly IUsuarioService _usuarioService;
 
@@ -24,7 +24,6 @@ public class UsuarioController : MainController
     [ProducesResponseType(typeof(UsuarioDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> Adicionar([FromBody] AdicionarUsuarioDto dto)
     {
         var adicionarUsuario = await _usuarioService.Adicionar(dto);
@@ -36,7 +35,6 @@ public class UsuarioController : MainController
     [ProducesResponseType(typeof(UsuarioDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Atualizar(int id, [FromBody] AtualizarUsuarioDto dto)
     {
@@ -45,10 +43,9 @@ public class UsuarioController : MainController
     }
 
     [HttpGet("Obter-Por-Id/{id}")]
-    [SwaggerOperation(Summary = "Obter um usuário por id.", Tags = new[] { "Administração - Usuários" })]
+    [SwaggerOperation(Summary = "Obter um usuário pelo id.", Tags = new[] { "Administração - Usuários" })]
     [ProducesResponseType(typeof(UsuarioDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ObterPorId(int id)
     {
@@ -60,18 +57,16 @@ public class UsuarioController : MainController
     [SwaggerOperation(Summary = "Obter usuários pelo email.", Tags = new[] { "Administração - Usuários" })]
     [ProducesResponseType(typeof(UsuarioDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> ObterPorEmail(string email)
     {
         var obterUsuarios = await _usuarioService.ObterPorEmail(email);
         return OkResponse(obterUsuarios);
     }
-    
+
     [HttpGet("Obter-Por-Matricula/{matricula}")]
     [SwaggerOperation(Summary = "Obter usuários pela matrícula.", Tags = new[] { "Administração - Usuários" })]
     [ProducesResponseType(typeof(UsuarioDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> ObterPorMatricula(string matricula)
     {
         var obterUsuarios = await _usuarioService.ObterPorMatricula(matricula);
@@ -82,34 +77,9 @@ public class UsuarioController : MainController
     [SwaggerOperation(Summary = "Obter todos os usuários.", Tags = new[] { "Administração - Usuários" })]
     [ProducesResponseType(typeof(UsuarioDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> ObterTodos()
     {
         var obterUsuarios = await _usuarioService.ObterTodos();
         return OkResponse(obterUsuarios);
-    }
-
-    [HttpPatch("Reativar/{id}")]
-    [SwaggerOperation(Summary = "Reativar um usuário.", Tags = new[] { "Administração - Usuários" })]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Reativar(int id)
-    {
-        await _usuarioService.Reativar(id);
-        return NoContent();
-    }
-
-    [HttpPatch("Desativar/{id}")]
-    [SwaggerOperation(Summary = "Desativar um usuário.", Tags = new[] { "Administração - Usuários" })]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Desativar(int id)
-    {
-        await _usuarioService.Desativar(id);
-        return NoContent();
     }
 }

@@ -15,8 +15,8 @@ public class ValidadorParaAdicionarUsuario : AbstractValidator<Domain.Entities.U
         RuleFor(u => u.Matricula)
             .NotNull()
             .WithMessage("A matrícula não pode ser nula.")
-            .Length(10)
-            .WithMessage("A matrícula deve conter exatamente 10 dígitos.");
+            .Matches("^[0-9]{6}$")
+            .WithMessage("A matrícula deve conter exatamente 6 dígitos numéricos.");
 
         RuleFor(u => u.Email)
             .NotNull()
@@ -29,7 +29,7 @@ public class ValidadorParaAdicionarUsuario : AbstractValidator<Domain.Entities.U
         RuleFor(u => u.Senha)
             .NotNull()
             .WithMessage("A senha não pode ser nula.")
-            .MinimumLength(5)
-            .WithMessage("A senha deve conter no mínimo {MinLength} caracteres.");
+            .Matches("^[0-9]{6}$")
+            .WithMessage("A senha deve conter exatamente 6 dígitos numéricos.");
     }
 }

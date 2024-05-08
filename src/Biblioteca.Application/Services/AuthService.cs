@@ -1,15 +1,13 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using AutoMapper;
+using Biblioteca.Application.Configuration;
 using Biblioteca.Application.Contracts.Services;
 using Biblioteca.Application.DTOs.Auth;
 using Biblioteca.Application.Notifications;
-using Biblioteca.Core.Enum;
-using Biblioteca.Core.Extensions;
-using Biblioteca.Core.Settings;
 using Biblioteca.Domain.Contracts.Repositories;
 using Biblioteca.Domain.Entities;
-using Biblioteca.Domain.Validators.Usuario;
+using Biblioteca.Domain.Validators.Administrador;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -19,16 +17,16 @@ namespace Biblioteca.Application.Services;
 
 public class AuthService : BaseService, IAuthService
 {
-    private readonly IUsuarioRepository _usuarioRepository;
-    private readonly IPasswordHasher<Usuario> _passwordHasher;
+    private readonly IAdministradorRepository _administradorRepository;
+    private readonly IPasswordHasher<Administrador> _passwordHasher;
     private readonly IJwtService _jwtService;
     private readonly JwtSettings _jwtSettings;
 
-    public AuthService(INotificator notificator, IMapper mapper, IUsuarioRepository usuarioRepository,
-        IPasswordHasher<Usuario> passwordHasher, IJwtService jwtService,
+    public AuthService(INotificator notificator, IMapper mapper, IAdministradorRepository administradorRepository,
+        IPasswordHasher<Administrador> passwordHasher, IJwtService jwtService,
         IOptions<JwtSettings> jwtSettings) : base(notificator, mapper)
     {
-        _usuarioRepository = usuarioRepository;
+        _administradorRepository = administradorRepository;
         _passwordHasher = passwordHasher;
         _jwtService = jwtService;
         _jwtSettings = jwtSettings.Value;
@@ -39,19 +37,19 @@ public class AuthService : BaseService, IAuthService
         if (!await ValidacoesParaLogin(dto))
             return null;
 
-        var usuario = await _usuarioRepository.FirstOrDefault(u => u.Email == dto.Email);
-        if (usuario == null || !usuario.Ativo)
+        var administrador = await _administradorRepository.FirstOrDefault(a => a.Email == dto.Email);
+        if (administrador == null)
         {
             Notificator.HandleNotFoundResource();
             return null;
         }
 
-        var resultado = _passwordHasher.VerifyHashedPassword(usuario, usuario.Senha, dto.Senha);
+        var resultado = _passwordHasher.VerifyHashedPassword(administrador, administrador.Senha, dto.Senha);
         if (resultado != PasswordVerificationResult.Failed)
         {
             return new TokenDto
             {
-                Token = await GerarToken(usuario)
+                Token = await GerarToken(administrador)
             };
         }
 
@@ -59,32 +57,22 @@ public class AuthService : BaseService, IAuthService
         return null;
     }
 
-    public async Task<string> GerarToken(Usuario usuario)
+    private async Task<string> GerarToken(Administrador administrador)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
 
         var claimsIdentity = new ClaimsIdentity();
-        claimsIdentity.AddClaim(new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()));
-        claimsIdentity.AddClaim(new Claim(ClaimTypes.Name, usuario.Nome));
-        claimsIdentity.AddClaim(new Claim(ClaimTypes.Email, usuario.Email));
-
-        if ((bool)(!usuario.SuperUsuario)!)
-        {
-            claimsIdentity.AddClaim(new Claim("TipoUsuario", ETipoUsuario.Comum.ToDescriptionString()));
-        }
-        else
-        {
-            claimsIdentity.AddClaim(new Claim("TipoUsuario", ETipoUsuario.Administrador.ToDescriptionString()));
-        }
+        claimsIdentity.AddClaim(new Claim(ClaimTypes.NameIdentifier, administrador.Id.ToString()));
+        claimsIdentity.AddClaim(new Claim(ClaimTypes.Name, administrador.Nome));
+        claimsIdentity.AddClaim(new Claim(ClaimTypes.Email, administrador.Email));
 
         var key = await _jwtService.GetCurrentSigningCredentials();
+        
         var token = tokenHandler.CreateToken(new SecurityTokenDescriptor
         {
-            Issuer = _jwtSettings.Emissor,
             Subject = claimsIdentity,
             Expires = DateTime.UtcNow.AddHours(_jwtSettings.ExpiracaoHoras),
-            SigningCredentials = key,
-            Audience = _jwtSettings.ComumValidoEm
+            SigningCredentials = key
         });
 
         return tokenHandler.WriteToken(token);
@@ -92,10 +80,10 @@ public class AuthService : BaseService, IAuthService
 
     private async Task<bool> ValidacoesParaLogin(LoginDto dto)
     {
-        var usuario = Mapper.Map<Usuario>(dto);
+        var administrador = Mapper.Map<Administrador>(dto);
         var validador = new ValidadorParaLogin();
 
-        var resultadoDaValidacao = await validador.ValidateAsync(usuario);
+        var resultadoDaValidacao = await validador.ValidateAsync(administrador);
         if (!resultadoDaValidacao.IsValid)
         {
             Notificator.Handle(resultadoDaValidacao.Errors);

@@ -12,22 +12,18 @@ public static class ApiConfiguration
 {
     public static void AddApiConfiguration(this IServiceCollection services)
     {
-        services
-            .AddResponseCaching();
+        services.AddResponseCaching();
 
         JsonConvert.DefaultSettings = () => new JsonSerializerSettings
         {
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore
         };
 
-        services
-            .AddRouting(options => options.LowercaseUrls = true);
+        services.AddRouting(options => options.LowercaseUrls = true);
 
-        services
-            .Configure<RouteOptions>(options => options.LowercaseUrls = true);
+        services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
 
-        services
-            .AddDateOnlyTimeOnlyStringConverters();
+        services.AddDateOnlyTimeOnlyStringConverters();
 
         services
             .AddControllers(conf =>
@@ -66,8 +62,7 @@ public static class ApiConfiguration
             });
     }
 
-    public static void UseApiConfiguration(this IApplicationBuilder app, IServiceProvider services,
-        IHostEnvironment env)
+    public static void UseApiConfiguration(this IApplicationBuilder app)
     {
         app.UseForwardedHeaders(new ForwardedHeadersOptions
         {
@@ -80,8 +75,10 @@ public static class ApiConfiguration
     private sealed class SlugifyParameterTransformer : IOutboundParameterTransformer
     {
         public string? TransformOutbound(object? value)
-            => value == null
+        {
+            return value == null
                 ? null
                 : Regex.Replace(value.ToString() ?? string.Empty, "([a-z])([A-Z])", "$1-$2").ToLower();
+        }
     }
 }

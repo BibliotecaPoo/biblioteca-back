@@ -10,6 +10,4 @@ public interface IUsuarioService
     Task<List<UsuarioDto>> ObterPorEmail(string email);
     Task<List<UsuarioDto>> ObterPorMatricula(string matricula);
     Task<List<UsuarioDto>> ObterTodos();
-    Task Reativar(int id);
-    Task Desativar(int id);
 }

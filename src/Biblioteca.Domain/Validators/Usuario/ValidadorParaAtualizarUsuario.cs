@@ -12,8 +12,8 @@ public class ValidadorParaAtualizarUsuario : AbstractValidator<Domain.Entities.U
             .When(u => !string.IsNullOrEmpty(u.Nome));
 
         RuleFor(u => u.Matricula)
-            .Length(10)
-            .WithMessage("A matrícula deve conter exatamente 10 dígitos.")
+            .Matches("^[0-9]{6}$")
+            .WithMessage("A matrícula deve conter exatamente 6 dígitos numéricos.")
             .When(u => !string.IsNullOrEmpty(u.Matricula));
 
         RuleFor(u => u.Email)
@@ -24,8 +24,8 @@ public class ValidadorParaAtualizarUsuario : AbstractValidator<Domain.Entities.U
             .When(u => !string.IsNullOrEmpty(u.Email));
 
         RuleFor(u => u.Senha)
-            .MinimumLength(5)
-            .WithMessage("A senha deve conter no mínimo {MinLength} caracteres.")
+            .Matches("^[0-9]{6}$")
+            .WithMessage("A senha deve conter exatamente 6 dígitos numéricos.")
             .When(u => !string.IsNullOrEmpty(u.Senha));
     }
 }

@@ -1,11 +1,10 @@
 ﻿using System.Reflection;
+using Biblioteca.Application.Configuration;
 using Biblioteca.Application.Contracts.Services;
 using Biblioteca.Application.Notifications;
 using Biblioteca.Application.Services;
-using Biblioteca.Core.Settings;
 using Biblioteca.Domain.Entities;
 using Biblioteca.Infra.Data;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,7 +16,6 @@ public static class DependencyInjection
 {
     public static void SetupSettings(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<AppSettings>(configuration.GetSection("AppSettings"));
         services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
     }
 
@@ -31,15 +29,14 @@ public static class DependencyInjection
     public static void AddServices(this IServiceCollection services)
     {
         services
-            .AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
-        services
+            .AddScoped<IPasswordHasher<Administrador>, Argon2PasswordHasher<Administrador>>()
             .AddScoped<IPasswordHasher<Usuario>, Argon2PasswordHasher<Usuario>>()
             .AddScoped<INotificator, Notificator>();
 
         services
             .AddScoped<IAuthService, AuthService>()
             .AddScoped<IUsuarioService, UsuarioService>()
-            .AddScoped<ILivroService, LivroService>();
+            .AddScoped<ILivroService, LivroService>()
+            .AddScoped<IEmprestimoService, EmprestimoService>();
     }
 }

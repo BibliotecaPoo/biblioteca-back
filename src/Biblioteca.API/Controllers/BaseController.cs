@@ -29,7 +29,7 @@ public abstract class BaseController : Controller
     protected IActionResult OkResponse(object? result = null)
         => CustomResponse(Ok(result));
 
-    protected IActionResult CustomResponse(IActionResult objectResult)
+    private IActionResult CustomResponse(IActionResult objectResult)
     {
         if (OperacaoValida)
             return objectResult;
@@ -64,5 +64,6 @@ public abstract class BaseController : Controller
 
     private bool OperacaoValida => !(_notificator.HasNotification || _notificator.IsNotFoundResource);
 
-    private void AdicionarErroProcessamento(string erro) => _notificator.Handle(erro);
+    private void AdicionarErroProcessamento(string erro)
+        => _notificator.Handle(erro);
 }

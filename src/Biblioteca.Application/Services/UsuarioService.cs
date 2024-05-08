@@ -73,36 +73,6 @@ public class UsuarioService : BaseService, IUsuarioService
         return Mapper.Map<List<UsuarioDto>>(obterUsuarios);
     }
 
-    public async Task Reativar(int id)
-    {
-        var reativarUsuario = await _usuarioRepository.ObterPorId(id);
-        if (reativarUsuario == null)
-        {
-            Notificator.HandleNotFoundResource();
-            return;
-        }
-
-        reativarUsuario.Ativo = true;
-
-        _usuarioRepository.Atualizar(reativarUsuario);
-        await CommitChanges();
-    }
-
-    public async Task Desativar(int id)
-    {
-        var desativarUsuario = await _usuarioRepository.ObterPorId(id);
-        if (desativarUsuario == null)
-        {
-            Notificator.HandleNotFoundResource();
-            return;
-        }
-
-        desativarUsuario.Ativo = false;
-
-        _usuarioRepository.Atualizar(desativarUsuario);
-        await CommitChanges();
-    }
-
     private async Task<bool> ValidacoesParaAdicionarUsuario(AdicionarUsuarioDto dto)
     {
         var usuario = Mapper.Map<Usuario>(dto);
@@ -134,12 +104,6 @@ public class UsuarioService : BaseService, IUsuarioService
 
     private async Task<bool> ValidacoesParaAtualizarUsuario(int id, AtualizarUsuarioDto dto)
     {
-        if (id != dto.Id)
-        {
-            Notificator.Handle("Os ids não conferem.");
-            return false;
-        }
-
         var usuarioExistente = await _usuarioRepository.ObterPorId(id);
         if (usuarioExistente == null)
         {

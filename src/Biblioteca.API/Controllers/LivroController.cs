@@ -6,11 +6,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace Biblioteca.API.Controllers.Administracao;
+namespace Biblioteca.API.Controllers;
 
 [Authorize]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class LivroController : MainController
+public class LivroController : BaseController
 {
     private readonly ILivroService _livroService;
 
@@ -24,7 +24,6 @@ public class LivroController : MainController
     [ProducesResponseType(typeof(LivroDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> Adicionar([FromBody] AdicionarLivroDto dto)
     {
         var adicionarLivro = await _livroService.Adicionar(dto);
@@ -36,7 +35,6 @@ public class LivroController : MainController
     [ProducesResponseType(typeof(LivroDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Atualizar(int id, [FromBody] AtualizarLivroDto dto)
     {
@@ -49,7 +47,6 @@ public class LivroController : MainController
     [ProducesResponseType(typeof(LivroDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> UploadCapa(int id, [FromForm] ICollection<IFormFile>? files)
     {
         var adicionarCapa = await _livroService.UploadCapa(id, files);
@@ -61,7 +58,6 @@ public class LivroController : MainController
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DownloadCapa(int id)
     {
@@ -83,10 +79,9 @@ public class LivroController : MainController
     }
 
     [HttpGet("Obter-Por-Id/{id}")]
-    [SwaggerOperation(Summary = "Obter um livro por id.", Tags = new[] { "Administração - Livros" })]
+    [SwaggerOperation(Summary = "Obter um livro pelo id.", Tags = new[] { "Administração - Livros" })]
     [ProducesResponseType(typeof(LivroDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ObterPorId(int id)
     {
@@ -98,7 +93,6 @@ public class LivroController : MainController
     [SwaggerOperation(Summary = "Obter livros com o mesmo título.", Tags = new[] { "Administração - Livros" })]
     [ProducesResponseType(typeof(LivroDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> ObterPorTitulo(string titulo)
     {
         var obterLivros = await _livroService.ObterPorTitulo(titulo);
@@ -109,7 +103,6 @@ public class LivroController : MainController
     [SwaggerOperation(Summary = "Obter livros com o mesmo autor.", Tags = new[] { "Administração - Livros" })]
     [ProducesResponseType(typeof(LivroDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> ObterPorAutor(string autor)
     {
         var obterLivros = await _livroService.ObterPorAutor(autor);
@@ -120,7 +113,6 @@ public class LivroController : MainController
     [SwaggerOperation(Summary = "Obter livros com a mesma editora.", Tags = new[] { "Administração - Livros" })]
     [ProducesResponseType(typeof(LivroDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> ObterPorEditora(string editora)
     {
         var obterLivros = await _livroService.ObterPorEditora(editora);
@@ -131,7 +123,6 @@ public class LivroController : MainController
     [SwaggerOperation(Summary = "Obter todos os livros.", Tags = new[] { "Administração - Livros" })]
     [ProducesResponseType(typeof(LivroDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> ObterTodos()
     {
         var obterLivros = await _livroService.ObterTodos();

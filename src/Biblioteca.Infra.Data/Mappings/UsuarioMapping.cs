@@ -19,7 +19,7 @@ public class UsuarioMapping : IEntityTypeConfiguration<Usuario>
         builder
             .Property(u => u.Matricula)
             .IsRequired()
-            .HasColumnType("CHAR(10)");
+            .HasColumnType("CHAR(6)");
 
         builder
             .Property(u => u.Email)
@@ -30,17 +30,26 @@ public class UsuarioMapping : IEntityTypeConfiguration<Usuario>
             .Property(u => u.Senha)
             .IsRequired()
             .HasColumnType("VARCHAR(255)");
-
+        
         builder
-            .Property(u => u.Ativo)
+            .Property(u => u.Bloqueado)
             .IsRequired()
-            .HasDefaultValue(true);
-
-        builder
-            .Property(u => u.SuperUsuario)
-            .IsRequired(false)
             .HasDefaultValue(false);
 
+        builder
+            .Property(u => u.DiasBloqueado)
+            .IsRequired(false);
+        
+        builder
+            .Property(u => u.DataInicioBloqueio)
+            .IsRequired(false)
+            .HasColumnType("DATETIME");
+        
+        builder
+            .Property(u => u.DataFimBloqueio)
+            .IsRequired(false)
+            .HasColumnType("DATETIME");
+        
         builder
             .Property(u => u.CriadoEm)
             .ValueGeneratedOnAdd()
@@ -50,5 +59,9 @@ public class UsuarioMapping : IEntityTypeConfiguration<Usuario>
             .Property(u => u.AtualizadoEm)
             .ValueGeneratedOnAddOrUpdate()
             .HasColumnType("DATETIME");
+
+        builder
+            .HasMany(u => u.Emprestimos)
+            .WithOne(e => e.Usuario);
     }
 }
