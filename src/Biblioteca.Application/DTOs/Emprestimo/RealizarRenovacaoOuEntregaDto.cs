@@ -2,5 +2,5 @@ namespace Biblioteca.Application.DTOs.Emprestimo;
 
 public class RealizarRenovacaoOuEntregaDto
 {
-    public string SenhaUsuario { get; set; } = null!;
+    public string UsuarioSenha { get; set; } = null!;
 }

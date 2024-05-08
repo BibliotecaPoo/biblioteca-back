@@ -9,7 +9,7 @@ public interface IEmprestimoService
     Task<EmprestimoDto?> RealizarEntrega(int id, RealizarRenovacaoOuEntregaDto dto);
     Task<EmprestimoDto?> ObterPorId(int id);
     Task<List<EmprestimoDto>> ObterTodos();
-    Task<List<EmprestimoDto>?> ObterHistoricoDeEmprestimoDeUmUsuario(int idUsuario);
-    Task<List<EmprestimoDto>?> ObterHistoricoDeEmprestimoDeUmUsuario(string matriculaUsuario);
-    Task<List<EmprestimoDto>?> ObterHistoricoDeEmprestimoDeUmLivro(int idLivro);
+    Task<List<EmprestimoDto>?> ObterHistoricoDeEmprestimoDeUmUsuario(int usuarioId);
+    Task<List<EmprestimoDto>?> ObterHistoricoDeEmprestimoDeUmUsuario(string usuarioMatricula);
+    Task<List<EmprestimoDto>?> ObterHistoricoDeEmprestimoDeUmLivro(int livroId);
 }

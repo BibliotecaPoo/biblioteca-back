@@ -32,11 +32,11 @@ public class EmprestimoMapping : IEntityTypeConfiguration<Emprestimo>
             .HasColumnType("VARCHAR(20)");
 
         builder
-            .Property(e => e.IdUsuario)
+            .Property(e => e.UsuarioId)
             .IsRequired();
 
         builder
-            .Property(e => e.IdLivro)
+            .Property(e => e.LivroId)
             .IsRequired();
 
         builder

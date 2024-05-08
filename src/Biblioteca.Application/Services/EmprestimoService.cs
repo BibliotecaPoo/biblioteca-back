@@ -28,7 +28,7 @@ public class EmprestimoService : BaseService, IEmprestimoService
 
     public async Task<EmprestimoDto?> RealizarEmprestimo(RealizarEmprestimoDto dto)
     {
-        var livro = await _livroRepository.ObterPorId(dto.IdLivro);
+        var livro = await _livroRepository.ObterPorId(dto.LivroId);
         if (livro == null)
         {
             Notificator.Handle("Livro não encontrado.");
@@ -50,7 +50,7 @@ public class EmprestimoService : BaseService, IEmprestimoService
             return null;
         }
 
-        var usuario = await _usuarioRepository.FirstOrDefault(u => u.Matricula == dto.MatriculaUsuario);
+        var usuario = await _usuarioRepository.FirstOrDefault(u => u.Matricula == dto.UsuarioMatricula);
         if (usuario == null)
         {
             Notificator.Handle("Usuário não encontrado com a matrícula informada.");
@@ -79,14 +79,14 @@ public class EmprestimoService : BaseService, IEmprestimoService
             return null;
         }
 
-        if (usuario.Emprestimos.Exists(e => e.Livro.Id == dto.IdLivro && e.StatusEmprestimo ==
+        if (usuario.Emprestimos.Exists(e => e.Livro.Id == dto.LivroId && e.StatusEmprestimo ==
                 EStatusEmprestimo.Emprestado || e.StatusEmprestimo == EStatusEmprestimo.Renovado))
         {
             Notificator.Handle("No momento o usuário já possui um exemplar emprestado ou renovado desse mesmo livro.");
             return null;
         }
 
-        var resultadoVerificacaoSenha = _passwordHasher.VerifyHashedPassword(usuario, usuario.Senha, dto.SenhaUsuario);
+        var resultadoVerificacaoSenha = _passwordHasher.VerifyHashedPassword(usuario, usuario.Senha, dto.UsuarioSenha);
         if (resultadoVerificacaoSenha == PasswordVerificationResult.Failed)
         {
             Notificator.Handle("Senha incorreta.");
@@ -100,7 +100,7 @@ public class EmprestimoService : BaseService, IEmprestimoService
         emprestimo.DataEmprestimo = DateTime.Today;
         emprestimo.DataDevolucaoPrevista = emprestimo.DataEmprestimo.AddDays(10);
         emprestimo.StatusEmprestimo = EStatusEmprestimo.Emprestado;
-        emprestimo.IdUsuario = usuario.Id;
+        emprestimo.UsuarioId = usuario.Id;
 
         _emprestimoRepository.Adicionar(emprestimo);
         return await CommitChanges() ? Mapper.Map<EmprestimoDto>(emprestimo) : null;
@@ -127,7 +127,7 @@ public class EmprestimoService : BaseService, IEmprestimoService
             return null;
         }
 
-        var usuario = await _usuarioRepository.ObterPorId(emprestimo.IdUsuario);
+        var usuario = await _usuarioRepository.ObterPorId(emprestimo.UsuarioId);
         if (usuario!.Bloqueado)
         {
             if (DateTime.Today > usuario.DataFimBloqueio)
@@ -150,7 +150,7 @@ public class EmprestimoService : BaseService, IEmprestimoService
             return null;
         }
 
-        var resultadoVerificacaoSenha = _passwordHasher.VerifyHashedPassword(usuario, usuario.Senha, dto.SenhaUsuario);
+        var resultadoVerificacaoSenha = _passwordHasher.VerifyHashedPassword(usuario, usuario.Senha, dto.UsuarioSenha);
         if (resultadoVerificacaoSenha == PasswordVerificationResult.Failed)
         {
             Notificator.Handle("Senha incorreta.");
@@ -180,9 +180,9 @@ public class EmprestimoService : BaseService, IEmprestimoService
             return null;
         }
 
-        var usuario = await _usuarioRepository.ObterPorId(emprestimo.IdUsuario);
+        var usuario = await _usuarioRepository.ObterPorId(emprestimo.UsuarioId);
 
-        var resultadoVerificacaoSenha = _passwordHasher.VerifyHashedPassword(usuario!, usuario!.Senha, dto.SenhaUsuario);
+        var resultadoVerificacaoSenha = _passwordHasher.VerifyHashedPassword(usuario!, usuario!.Senha, dto.UsuarioSenha);
         if (resultadoVerificacaoSenha == PasswordVerificationResult.Failed)
         {
             Notificator.Handle("Senha incorreta.");
@@ -238,42 +238,42 @@ public class EmprestimoService : BaseService, IEmprestimoService
         return Mapper.Map<List<EmprestimoDto>>(obterEmprestimos);
     }
 
-    public async Task<List<EmprestimoDto>?> ObterHistoricoDeEmprestimoDeUmUsuario(int idUsuario)
+    public async Task<List<EmprestimoDto>?> ObterHistoricoDeEmprestimoDeUmUsuario(int usuarioId)
     {
-        var usuario = await _usuarioRepository.ObterPorId(idUsuario);
+        var usuario = await _usuarioRepository.ObterPorId(usuarioId);
         if (usuario == null)
         {
             Notificator.Handle("Usuário não encontrado.");
             return null;
         }
 
-        var obterEmprestimos = await _emprestimoRepository.ObterHistoricoDeEmprestimoDeUmUsuario(idUsuario);
+        var obterEmprestimos = await _emprestimoRepository.ObterHistoricoDeEmprestimoDeUmUsuario(usuarioId);
         return Mapper.Map<List<EmprestimoDto>>(obterEmprestimos);
     }
 
-    public async Task<List<EmprestimoDto>?> ObterHistoricoDeEmprestimoDeUmUsuario(string matriculaUsuario)
+    public async Task<List<EmprestimoDto>?> ObterHistoricoDeEmprestimoDeUmUsuario(string usuarioMatricula)
     {
-        var usuario = await _usuarioRepository.FirstOrDefault(u => u.Matricula == matriculaUsuario);
+        var usuario = await _usuarioRepository.FirstOrDefault(u => u.Matricula == usuarioMatricula);
         if (usuario == null)
         {
             Notificator.Handle("Usuário não encontrado.");
             return null;
         }
 
-        var obterEmprestimos = await _emprestimoRepository.ObterHistoricoDeEmprestimoDeUmUsuario(matriculaUsuario);
+        var obterEmprestimos = await _emprestimoRepository.ObterHistoricoDeEmprestimoDeUmUsuario(usuarioMatricula);
         return Mapper.Map<List<EmprestimoDto>>(obterEmprestimos);
     }
 
-    public async Task<List<EmprestimoDto>?> ObterHistoricoDeEmprestimoDeUmLivro(int idLivro)
+    public async Task<List<EmprestimoDto>?> ObterHistoricoDeEmprestimoDeUmLivro(int livroId)
     {
-        var livro = await _livroRepository.ObterPorId(idLivro);
+        var livro = await _livroRepository.ObterPorId(livroId);
         if (livro == null)
         {
             Notificator.Handle("Livro não encontrado.");
             return null;
         }
 
-        var obterEmprestimos = await _emprestimoRepository.ObterHistoricoDeEmprestimoDeUmLivro(idLivro);
+        var obterEmprestimos = await _emprestimoRepository.ObterHistoricoDeEmprestimoDeUmLivro(livroId);
         return Mapper.Map<List<EmprestimoDto>>(obterEmprestimos);
     }
 
