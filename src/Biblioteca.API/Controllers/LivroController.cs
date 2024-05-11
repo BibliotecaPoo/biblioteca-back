@@ -65,15 +65,15 @@ public class LivroController : BaseController
         if (livro == null)
             return NotFound();
 
-        if (string.IsNullOrEmpty(livro.CaminhoCapa))
+        if (string.IsNullOrEmpty(livro.NomeArquivoCapa))
             return BadRequest("Ainda não foi adicionada uma imagem de capa para essa livro.");
 
-        var caminhoCompleto = Path.Combine("/home/guilherme/dev/imagens", livro.CaminhoCapa);
+        var caminhoCompleto = Path.Combine("/home/guilherme/dev/imagens", livro.NomeArquivoCapa);
         if (!System.IO.File.Exists(caminhoCompleto))
             return NotFound();
 
         var conteudo = "image/jpeg";
-        var nomeArquivo = livro.CaminhoCapa;
+        var nomeArquivo = livro.NomeArquivoCapa;
 
         return File(System.IO.File.OpenRead(caminhoCompleto), conteudo, nomeArquivo);
     }

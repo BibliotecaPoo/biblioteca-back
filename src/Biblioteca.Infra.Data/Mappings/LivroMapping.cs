@@ -15,7 +15,7 @@ public class LivroMapping : IEntityTypeConfiguration<Livro>
             .Property(l => l.Titulo)
             .IsRequired()
             .HasColumnType("VARCHAR(100)");
-        
+
         builder
             .Property(l => l.Autor)
             .IsRequired()
@@ -25,7 +25,7 @@ public class LivroMapping : IEntityTypeConfiguration<Livro>
             .Property(l => l.Edicao)
             .IsRequired()
             .HasColumnType("VARCHAR(30)");
-        
+
         builder
             .Property(l => l.Editora)
             .IsRequired()
@@ -34,7 +34,7 @@ public class LivroMapping : IEntityTypeConfiguration<Livro>
         builder
             .Property(l => l.AnoPublicacao)
             .IsRequired();
-        
+
         builder
             .Property(l => l.QuantidadeExemplares)
             .IsRequired();
@@ -49,7 +49,7 @@ public class LivroMapping : IEntityTypeConfiguration<Livro>
             .HasColumnType("VARCHAR(20)");
 
         builder
-            .Property(l => l.CaminhoCapa)
+            .Property(l => l.NomeArquivoCapa)
             .IsRequired(false)
             .HasColumnType("VARCHAR(255)");
 

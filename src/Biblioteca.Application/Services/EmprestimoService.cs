@@ -71,16 +71,22 @@ public class EmprestimoService : BaseService, IEmprestimoService
             }
         }
 
-        if (usuario.Emprestimos.Exists(e => DateTime.Today > e.DataDevolucaoPrevista &&
-                e.StatusEmprestimo == EStatusEmprestimo.Emprestado || e.StatusEmprestimo == EStatusEmprestimo.Renovado))
+        var emprestimoAtrasado = await _emprestimoRepository.FirstOrDefault(e =>
+            e.UsuarioId == usuario.Id &&
+            DateTime.Today > e.DataDevolucaoPrevista &&
+            (e.StatusEmprestimo == EStatusEmprestimo.Emprestado || e.StatusEmprestimo == EStatusEmprestimo.Renovado));
+        if (emprestimoAtrasado != null)
         {
             Notificator.Handle("O usuário possui outro(s) livro(s) em atraso e não entregue(s).");
             Notificator.Handle("Não é possível realizar o empréstimo do livro informado.");
             return null;
         }
 
-        if (usuario.Emprestimos.Exists(e => e.Livro.Id == dto.LivroId && e.StatusEmprestimo ==
-                EStatusEmprestimo.Emprestado || e.StatusEmprestimo == EStatusEmprestimo.Renovado))
+        var emprestimoIgual = await _emprestimoRepository.FirstOrDefault(e =>
+            e.LivroId == dto.LivroId &&
+            e.UsuarioId == usuario.Id &&
+            (e.StatusEmprestimo == EStatusEmprestimo.Emprestado || e.StatusEmprestimo == EStatusEmprestimo.Renovado));
+        if (emprestimoIgual != null)
         {
             Notificator.Handle("No momento o usuário já possui um exemplar emprestado ou renovado desse mesmo livro.");
             return null;
@@ -98,7 +104,7 @@ public class EmprestimoService : BaseService, IEmprestimoService
 
         var emprestimo = Mapper.Map<Emprestimo>(dto);
         emprestimo.DataEmprestimo = DateTime.Today;
-        emprestimo.DataDevolucaoPrevista = emprestimo.DataEmprestimo.AddDays(10);
+        emprestimo.DataDevolucaoPrevista = DateTime.Today.AddDays(10);
         emprestimo.StatusEmprestimo = EStatusEmprestimo.Emprestado;
         emprestimo.UsuarioId = usuario.Id;
 
@@ -142,8 +148,11 @@ public class EmprestimoService : BaseService, IEmprestimoService
             }
         }
 
-        if (usuario.Emprestimos.Exists(e => DateTime.Today > e.DataDevolucaoPrevista &&
-                e.StatusEmprestimo == EStatusEmprestimo.Emprestado || e.StatusEmprestimo == EStatusEmprestimo.Renovado))
+        var emprestimoAtrasado = await _emprestimoRepository.FirstOrDefault(e =>
+            e.UsuarioId == usuario.Id &&
+            DateTime.Today > e.DataDevolucaoPrevista &&
+            (e.StatusEmprestimo == EStatusEmprestimo.Emprestado || e.StatusEmprestimo == EStatusEmprestimo.Renovado));
+        if (emprestimoAtrasado != null)
         {
             Notificator.Handle("O usuário possui outro(s) livro(s) em atraso e não entregue(s).");
             Notificator.Handle("Não é possível renovar o livro informado.");
@@ -158,7 +167,7 @@ public class EmprestimoService : BaseService, IEmprestimoService
         }
 
         emprestimo.DataEmprestimo = DateTime.Today;
-        emprestimo.DataDevolucaoPrevista = emprestimo.DataEmprestimo.AddDays(10);
+        emprestimo.DataDevolucaoPrevista = DateTime.Today.AddDays(10);
         emprestimo.StatusEmprestimo = EStatusEmprestimo.Renovado;
 
         _emprestimoRepository.Atualizar(emprestimo);
@@ -189,7 +198,7 @@ public class EmprestimoService : BaseService, IEmprestimoService
             return null;
         }
 
-        var livro = await _livroRepository.ObterPorId(emprestimo.Livro.Id);
+        var livro = await _livroRepository.ObterPorId(emprestimo.LivroId);
         if (livro!.StatusLivro == EStatusLivro.Indisponivel)
         {
             livro.StatusLivro = EStatusLivro.Disponivel;

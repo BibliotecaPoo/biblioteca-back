@@ -1,6 +1,4 @@
-﻿using Biblioteca.Domain.Enums;
-
-namespace Biblioteca.Application.DTOs.Livro;
+﻿namespace Biblioteca.Application.DTOs.Livro;
 
 public class LivroDto
 {
@@ -12,6 +10,6 @@ public class LivroDto
     public int AnoPublicacao { get; set; }
     public int QuantidadeExemplares { get; set; }
     public int QuantidadeExemplaresDisponiveisParaEmprestimo { get; set; }
-    public EStatusLivro StatusLivro { get; set; }
-    public string? CaminhoCapa { get; set; }
+    public string StatusLivro { get; set; } = null!;
+    public string? NomeArquivoCapa { get; set; }
 }

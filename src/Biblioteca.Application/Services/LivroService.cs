@@ -68,9 +68,9 @@ public class LivroService : BaseService, ILivroService
                 return null;
             }
 
-            if (!string.IsNullOrEmpty(livro.CaminhoCapa))
+            if (!string.IsNullOrEmpty(livro.NomeArquivoCapa))
             {
-                var caminhoImagemAnterior = Path.Combine("/home/guilherme/dev/imagens", livro.CaminhoCapa);
+                var caminhoImagemAnterior = Path.Combine("/home/guilherme/dev/imagens", livro.NomeArquivoCapa);
                 if (File.Exists(caminhoImagemAnterior))
                     File.Delete(caminhoImagemAnterior);
             }
@@ -78,12 +78,12 @@ public class LivroService : BaseService, ILivroService
             var nomeArquivo = DateTime.Now.Ticks + "_" + Path.GetFileName(file.FileName);
             var caminhoCompleto = Path.Combine("/home/guilherme/dev/imagens", nomeArquivo);
 
-            using (var stream = new FileStream(caminhoCompleto, FileMode.Create))
+            await using (var stream = new FileStream(caminhoCompleto, FileMode.Create))
             {
                 await file.CopyToAsync(stream);
             }
 
-            livro.CaminhoCapa = nomeArquivo;
+            livro.NomeArquivoCapa = nomeArquivo;
 
             _livroRepository.Atualizar(livro);
         }
@@ -157,8 +157,7 @@ public class LivroService : BaseService, ILivroService
             return false;
         }
 
-        if (livroExistente.Emprestimos.Exists(e => e.StatusEmprestimo == EStatusEmprestimo.Emprestado 
-                                                   || e.StatusEmprestimo == EStatusEmprestimo.Renovado))
+        if (livroExistente.QuantidadeExemplaresDisponiveisParaEmprestimo < livroExistente.QuantidadeExemplares)
         {
             Notificator.Handle("Não é possível atualizar um livro que tenha algum exemplar emprestado ou renovado.");
             return false;

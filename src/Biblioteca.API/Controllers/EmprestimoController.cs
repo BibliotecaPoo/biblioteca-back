@@ -75,36 +75,36 @@ public class EmprestimoController : BaseController
         return OkResponse(obterEmprestimos);
     }
 
-    [HttpGet("Obter-Historico-Usuario-Por-Id/{usuarioId}")]
+    [HttpGet("Obter-Historico-Usuario-Por-Id/{id}")]
     [SwaggerOperation(Summary = "Obter o histórico de empréstimo de um usuário pelo id.", Tags = new[] { "Administração - Empréstimo" })]
     [ProducesResponseType(typeof(EmprestimoDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> ObterHistoricoDeEmprestimoDeUmUsuario(int usuarioId)
+    public async Task<IActionResult> ObterHistoricoDeEmprestimoDeUmUsuario(int id)
     {
-        var obterEmprestimos = await _emprestimoService.ObterHistoricoDeEmprestimoDeUmUsuario(usuarioId);
+        var obterEmprestimos = await _emprestimoService.ObterHistoricoDeEmprestimoDeUmUsuario(id);
         return OkResponse(obterEmprestimos);
     }
 
-    [HttpGet("Obter-Historico-Usuario-Por-Matricula/{usuarioMatricula}")]
+    [HttpGet("Obter-Historico-Usuario-Por-Matricula/{matricula}")]
     [SwaggerOperation(Summary = "Obter o histórico de empréstimo de um usuário pela matrícula.", Tags = new[] { "Administração - Empréstimo" })]
     [ProducesResponseType(typeof(EmprestimoDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> ObterHistoricoDeEmprestimoDeUmUsuario(string usuarioMatricula)
+    public async Task<IActionResult> ObterHistoricoDeEmprestimoDeUmUsuario(string matricula)
     {
-        var obterEmprestimos = await _emprestimoService.ObterHistoricoDeEmprestimoDeUmUsuario(usuarioMatricula);
+        var obterEmprestimos = await _emprestimoService.ObterHistoricoDeEmprestimoDeUmUsuario(matricula);
         return OkResponse(obterEmprestimos);
     }
 
-    [HttpGet("Obter-Historico-Livro-Por-Id/{livroId}")]
+    [HttpGet("Obter-Historico-Livro-Por-Id/{id}")]
     [SwaggerOperation(Summary = "Obter o histórico de empréstimo de um livro pelo id.", Tags = new[] { "Administração - Empréstimo" })]
     [ProducesResponseType(typeof(EmprestimoDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> ObterHistoricoDeEmprestimoDeUmLivro(int livroId)
+    public async Task<IActionResult> ObterHistoricoDeEmprestimoDeUmLivro(int id)
     {
-        var obterEmprestimos = await _emprestimoService.ObterHistoricoDeEmprestimoDeUmLivro(livroId);
+        var obterEmprestimos = await _emprestimoService.ObterHistoricoDeEmprestimoDeUmLivro(id);
         return OkResponse(obterEmprestimos);
     }
 }

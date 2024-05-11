@@ -12,7 +12,7 @@ public class Livro : Entity
     public int QuantidadeExemplares { get; set; }
     public int QuantidadeExemplaresDisponiveisParaEmprestimo { get; set; }
     public EStatusLivro StatusLivro { get; set; }
-    public string? CaminhoCapa { get; set; }
+    public string? NomeArquivoCapa { get; set; }
 
     // Relation
     public virtual List<Emprestimo> Emprestimos { get; set; } = new();
