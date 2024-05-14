@@ -26,7 +26,7 @@ public class LivroService : BaseService, ILivroService
             return null;
 
         var adicionarLivro = Mapper.Map<Livro>(dto);
-        adicionarLivro.QuantidadeExemplaresDisponiveisParaEmprestimo = adicionarLivro.QuantidadeExemplares;
+        adicionarLivro.QuantidadeExemplaresDisponiveisParaEmprestimo = adicionarLivro.QuantidadeExemplaresDisponiveisEmEstoque;
         adicionarLivro.StatusLivro = EStatusLivro.Disponivel;
 
         _livroRepository.Adicionar(adicionarLivro);
@@ -157,7 +157,7 @@ public class LivroService : BaseService, ILivroService
             return false;
         }
 
-        if (livroExistente.QuantidadeExemplaresDisponiveisParaEmprestimo < livroExistente.QuantidadeExemplares)
+        if (livroExistente.QuantidadeExemplaresDisponiveisParaEmprestimo < livroExistente.QuantidadeExemplaresDisponiveisEmEstoque)
         {
             Notificator.Handle("Não é possível atualizar um livro que tenha algum exemplar emprestado ou renovado.");
             return false;
@@ -199,9 +199,9 @@ public class LivroService : BaseService, ILivroService
             }
         }
 
-        if (dto.QuantidadeExemplares.HasValue)
+        if (dto.QuantidadeExemplaresDisponiveisEmEstoque.HasValue)
         {
-            if (dto.QuantidadeExemplares == 0 || dto.QuantidadeExemplares < 0)
+            if (dto.QuantidadeExemplaresDisponiveisEmEstoque == 0 || dto.QuantidadeExemplaresDisponiveisEmEstoque < 0)
             {
                 Notificator.Handle("A quantidade de exemplares deve ser maior que 0.");
                 return false;
@@ -209,7 +209,7 @@ public class LivroService : BaseService, ILivroService
         }
 
         if (string.IsNullOrEmpty(dto.Titulo) && string.IsNullOrEmpty(dto.Autor) && string.IsNullOrEmpty(dto.Edicao) &&
-            string.IsNullOrEmpty(dto.Editora) && !dto.AnoPublicacao.HasValue && !dto.QuantidadeExemplares.HasValue)
+            string.IsNullOrEmpty(dto.Editora) && !dto.AnoPublicacao.HasValue && !dto.QuantidadeExemplaresDisponiveisEmEstoque.HasValue)
         {
             Notificator.Handle("Nenhum campo fornecido para atualização.");
             return false;
@@ -235,10 +235,10 @@ public class LivroService : BaseService, ILivroService
         if (dto.AnoPublicacao.HasValue)
             livro.AnoPublicacao = (int)dto.AnoPublicacao;
 
-        if (dto.QuantidadeExemplares.HasValue)
+        if (dto.QuantidadeExemplaresDisponiveisEmEstoque.HasValue)
         {
-            livro.QuantidadeExemplares = (int)dto.QuantidadeExemplares;
-            livro.QuantidadeExemplaresDisponiveisParaEmprestimo = livro.QuantidadeExemplares;
+            livro.QuantidadeExemplaresDisponiveisEmEstoque = (int)dto.QuantidadeExemplaresDisponiveisEmEstoque;
+            livro.QuantidadeExemplaresDisponiveisParaEmprestimo = livro.QuantidadeExemplaresDisponiveisEmEstoque;
         }
     }
 

@@ -8,6 +8,8 @@ public class Emprestimo : Entity
     public DateTime DataDevolucaoPrevista { get; set; }
     public DateTime? DataDevolucaoRealizada { get; set; }
     public EStatusEmprestimo StatusEmprestimo { get; set; }
+    public int QuantidadeRenovacoesPermitida { get; set; }
+    public int QuantidadeRenovacoesRealizadas { get; set; }
     public int UsuarioId { get; set; }
     public int LivroId { get; set; }
 

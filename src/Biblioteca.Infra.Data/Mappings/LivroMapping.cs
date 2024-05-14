@@ -36,7 +36,7 @@ public class LivroMapping : IEntityTypeConfiguration<Livro>
             .IsRequired();
 
         builder
-            .Property(l => l.QuantidadeExemplares)
+            .Property(l => l.QuantidadeExemplaresDisponiveisEmEstoque)
             .IsRequired();
 
         builder

@@ -7,5 +7,5 @@ public class AdicionarLivroDto
     public string Edicao { get; set; } = null!;
     public string Editora { get; set; } = null!;
     public int AnoPublicacao { get; set; }
-    public int QuantidadeExemplares { get; set; }
+    public int QuantidadeExemplaresDisponiveisEmEstoque { get; set; }
 }

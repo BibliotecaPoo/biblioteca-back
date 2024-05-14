@@ -8,7 +8,7 @@ public class LivroDto
     public string Edicao { get; set; } = null!;
     public string Editora { get; set; } = null!;
     public int AnoPublicacao { get; set; }
-    public int QuantidadeExemplares { get; set; }
+    public int QuantidadeExemplaresDisponiveisEmEstoque { get; set; }
     public int QuantidadeExemplaresDisponiveisParaEmprestimo { get; set; }
     public string StatusLivro { get; set; } = null!;
     public string? NomeArquivoCapa { get; set; }

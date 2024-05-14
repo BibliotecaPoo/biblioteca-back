@@ -7,6 +7,8 @@ public class EmprestimoDto
     public DateTime DataDevolucaoPrevista { get; set; }
     public DateTime? DataDevolucaoRealizada { get; set; }
     public string StatusEmprestimo { get; set; } = null!;
+    public int QuantidadeRenovacoesPermitida { get; set; }
+    public int QuantidadeRenovacoesRealizadas { get; set; }
     public int UsuarioId { get; set; }
     public int LivroId { get; set; }
 }

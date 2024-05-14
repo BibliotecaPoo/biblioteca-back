@@ -71,6 +71,12 @@ public class EmprestimoService : BaseService, IEmprestimoService
             }
         }
 
+        if (usuario.QuantidadeEmprestimosRealizados == usuario.QuantidadeEmprestimosPermitida)
+        {
+            Notificator.Handle("O usuário já atingiu o limite de 5 empréstimos.");
+            return null;
+        }
+
         var emprestimoAtrasado = await _emprestimoRepository.FirstOrDefault(e =>
             e.UsuarioId == usuario.Id &&
             DateTime.Today > e.DataDevolucaoPrevista &&
@@ -102,10 +108,14 @@ public class EmprestimoService : BaseService, IEmprestimoService
         livro.QuantidadeExemplaresDisponiveisParaEmprestimo -= 1;
         _livroRepository.Atualizar(livro);
 
+        usuario.QuantidadeEmprestimosRealizados += 1;
+        _usuarioRepository.Atualizar(usuario);
+
         var emprestimo = Mapper.Map<Emprestimo>(dto);
         emprestimo.DataEmprestimo = DateTime.Today;
         emprestimo.DataDevolucaoPrevista = DateTime.Today.AddDays(10);
         emprestimo.StatusEmprestimo = EStatusEmprestimo.Emprestado;
+        emprestimo.QuantidadeRenovacoesPermitida = 5;
         emprestimo.UsuarioId = usuario.Id;
 
         _emprestimoRepository.Adicionar(emprestimo);
@@ -130,6 +140,12 @@ public class EmprestimoService : BaseService, IEmprestimoService
         if (DateTime.Today > emprestimo.DataDevolucaoPrevista)
         {
             Notificator.Handle("O empréstimo está com atraso na devolução prevista. Não é possível renovar o livro.");
+            return null;
+        }
+
+        if (emprestimo.QuantidadeRenovacoesRealizadas == emprestimo.QuantidadeRenovacoesPermitida)
+        {
+            Notificator.Handle("O usuário já atingiu o limite de 5 renovações para esse livro.");
             return null;
         }
 
@@ -169,6 +185,7 @@ public class EmprestimoService : BaseService, IEmprestimoService
         emprestimo.DataEmprestimo = DateTime.Today;
         emprestimo.DataDevolucaoPrevista = DateTime.Today.AddDays(10);
         emprestimo.StatusEmprestimo = EStatusEmprestimo.Renovado;
+        emprestimo.QuantidadeRenovacoesRealizadas += 1;
 
         _emprestimoRepository.Atualizar(emprestimo);
         return await CommitChanges() ? Mapper.Map<EmprestimoDto>(emprestimo) : null;
@@ -206,6 +223,9 @@ public class EmprestimoService : BaseService, IEmprestimoService
 
         livro.QuantidadeExemplaresDisponiveisParaEmprestimo += 1;
         _livroRepository.Atualizar(livro);
+
+        usuario.QuantidadeEmprestimosRealizados -= 1;
+        _usuarioRepository.Atualizar(usuario);
 
         emprestimo.DataDevolucaoRealizada = DateTime.Today;
 

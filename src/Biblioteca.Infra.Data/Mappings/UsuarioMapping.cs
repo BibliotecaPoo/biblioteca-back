@@ -30,6 +30,15 @@ public class UsuarioMapping : IEntityTypeConfiguration<Usuario>
             .Property(u => u.Senha)
             .IsRequired()
             .HasColumnType("VARCHAR(255)");
+
+        builder
+            .Property(u => u.QuantidadeEmprestimosPermitida)
+            .IsRequired();
+
+        builder
+            .Property(u => u.QuantidadeEmprestimosRealizados)
+            .IsRequired()
+            .HasDefaultValue(0);
         
         builder
             .Property(u => u.Bloqueado)
@@ -38,17 +47,18 @@ public class UsuarioMapping : IEntityTypeConfiguration<Usuario>
 
         builder
             .Property(u => u.DiasBloqueado)
-            .IsRequired(false);
+            .IsRequired()
+            .HasDefaultValue(0);
         
         builder
             .Property(u => u.DataInicioBloqueio)
             .IsRequired(false)
-            .HasColumnType("DATETIME");
+            .HasColumnType("DATE");
         
         builder
             .Property(u => u.DataFimBloqueio)
             .IsRequired(false)
-            .HasColumnType("DATETIME");
+            .HasColumnType("DATE");
         
         builder
             .Property(u => u.CriadoEm)

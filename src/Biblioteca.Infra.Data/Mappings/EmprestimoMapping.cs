@@ -14,22 +14,31 @@ public class EmprestimoMapping : IEntityTypeConfiguration<Emprestimo>
         builder
             .Property(e => e.DataEmprestimo)
             .IsRequired()
-            .HasColumnType("DATETIME");
+            .HasColumnType("DATE");
 
         builder
             .Property(e => e.DataDevolucaoPrevista)
             .IsRequired()
-            .HasColumnType("DATETIME");
+            .HasColumnType("DATE");
 
         builder
             .Property(e => e.DataDevolucaoRealizada)
             .IsRequired(false)
-            .HasColumnType("DATETIME");
+            .HasColumnType("DATE");
 
         builder
             .Property(e => e.StatusEmprestimo)
             .IsRequired()
             .HasColumnType("VARCHAR(20)");
+
+        builder
+            .Property(e => e.QuantidadeRenovacoesPermitida)
+            .IsRequired();
+
+        builder
+            .Property(e => e.QuantidadeRenovacoesRealizadas)
+            .IsRequired()
+            .HasDefaultValue(0);
 
         builder
             .Property(e => e.UsuarioId)

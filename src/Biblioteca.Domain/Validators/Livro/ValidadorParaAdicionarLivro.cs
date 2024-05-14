@@ -40,7 +40,7 @@ public class ValidadorParaAdicionarLivro : AbstractValidator<Entities.Livro>
             .LessThanOrEqualTo(DateTime.Now.Year)
             .WithMessage("O ano de publicação não pode ser no futuro.");
 
-        RuleFor(l => l.QuantidadeExemplares)
+        RuleFor(l => l.QuantidadeExemplaresDisponiveisEmEstoque)
             .NotNull()
             .WithMessage("A quantidade de exemplares não pode ser nula.")
             .GreaterThan(0)
