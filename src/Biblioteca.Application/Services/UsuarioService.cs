@@ -142,8 +142,8 @@ public class UsuarioService : BaseService, IUsuarioService
             }
         }
 
-        if (string.IsNullOrEmpty(dto.Nome) && string.IsNullOrEmpty(dto.Matricula) && string.IsNullOrEmpty(dto.Email) &&
-            string.IsNullOrEmpty(dto.Senha))
+        if (string.IsNullOrEmpty(dto.Nome) && string.IsNullOrEmpty(dto.Matricula) && 
+            string.IsNullOrEmpty(dto.Email) && string.IsNullOrEmpty(dto.Senha))
         {
             Notificator.Handle("Nenhum campo fornecido para atualização.");
             return false;

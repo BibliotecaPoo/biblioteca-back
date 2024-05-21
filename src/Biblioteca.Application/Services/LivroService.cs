@@ -137,11 +137,14 @@ public class LivroService : BaseService, ILivroService
             return false;
         }
 
-        var livroComTituloEEdicaoExistente = await _livroRepository.FirstOrDefault(l => l.Titulo == dto.Titulo
-            && l.Edicao == dto.Edicao);
-        if (livroComTituloEEdicaoExistente != null)
+        var livroIgual = await _livroRepository.FirstOrDefault(l =>
+            l.Titulo == dto.Titulo && 
+            l.Autor == dto.Autor && 
+            l.Edicao == dto.Edicao && 
+            l.Editora == dto.Editora);
+        if (livroIgual != null)
         {
-            Notificator.Handle("Já foi cadastrado um livro com o título e a edição informados.");
+            Notificator.Handle("Já existe um livro cadastrado com o título, autor, edição e editora informados.");
             return false;
         }
 
@@ -173,20 +176,9 @@ public class LivroService : BaseService, ILivroService
             return false;
         }
 
-        if (!string.IsNullOrEmpty(dto.Titulo) && !string.IsNullOrEmpty(dto.Edicao))
-        {
-            var livroComTituloEEdicaoExistente = await _livroRepository.FirstOrDefault(l => l.Titulo == dto.Titulo
-                && l.Edicao == dto.Edicao);
-            if (livroComTituloEEdicaoExistente != null)
-            {
-                Notificator.Handle("Já foi cadastrado um livro com o título e a edição informados.");
-                return false;
-            }
-        }
-
         if (dto.AnoPublicacao.HasValue)
         {
-            if (dto.AnoPublicacao == 0 || dto.AnoPublicacao < 0)
+            if (dto.AnoPublicacao <= 0)
             {
                 Notificator.Handle("O ano de publicação deve ser maior que 0.");
                 return false;
@@ -199,17 +191,30 @@ public class LivroService : BaseService, ILivroService
             }
         }
 
-        if (dto.QuantidadeExemplaresDisponiveisEmEstoque.HasValue)
+        if (dto.QuantidadeExemplaresDisponiveisEmEstoque.HasValue && dto.QuantidadeExemplaresDisponiveisEmEstoque <= 0)
         {
-            if (dto.QuantidadeExemplaresDisponiveisEmEstoque == 0 || dto.QuantidadeExemplaresDisponiveisEmEstoque < 0)
+            Notificator.Handle("A quantidade de exemplares deve ser maior que 0.");
+            return false;
+        }
+
+        if (!string.IsNullOrEmpty(dto.Titulo) && !string.IsNullOrEmpty(dto.Autor) &&
+            !string.IsNullOrEmpty(dto.Edicao) && !string.IsNullOrEmpty(dto.Editora))
+        {
+            var livroIgual = await _livroRepository.FirstOrDefault(l =>
+                l.Titulo == dto.Titulo &&
+                l.Autor == dto.Autor &&
+                l.Edicao == dto.Edicao &&
+                l.Editora == dto.Editora);
+            if (livroIgual != null)
             {
-                Notificator.Handle("A quantidade de exemplares deve ser maior que 0.");
+                Notificator.Handle("Já existe um livro cadastrado com o título, autor, edição e editora informados.");
                 return false;
             }
         }
 
-        if (string.IsNullOrEmpty(dto.Titulo) && string.IsNullOrEmpty(dto.Autor) && string.IsNullOrEmpty(dto.Edicao) &&
-            string.IsNullOrEmpty(dto.Editora) && !dto.AnoPublicacao.HasValue && !dto.QuantidadeExemplaresDisponiveisEmEstoque.HasValue)
+        if (string.IsNullOrEmpty(dto.Titulo) && string.IsNullOrEmpty(dto.Autor) &&
+            string.IsNullOrEmpty(dto.Edicao) && string.IsNullOrEmpty(dto.Editora) &&
+            !dto.AnoPublicacao.HasValue && !dto.QuantidadeExemplaresDisponiveisEmEstoque.HasValue)
         {
             Notificator.Handle("Nenhum campo fornecido para atualização.");
             return false;

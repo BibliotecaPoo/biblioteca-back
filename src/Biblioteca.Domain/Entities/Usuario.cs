@@ -6,9 +6,6 @@ public class Usuario : Pessoa
     public int QuantidadeEmprestimosPermitida { get; set; }
     public int QuantidadeEmprestimosRealizados { get; set; }
     public bool Bloqueado { get; set; }
-    public int DiasBloqueado { get; set; }
-    public DateTime? DataInicioBloqueio { get; set; }
-    public DateTime? DataFimBloqueio { get; set; }
 
     // Relation
     public virtual List<Emprestimo> Emprestimos { get; set; } = new();

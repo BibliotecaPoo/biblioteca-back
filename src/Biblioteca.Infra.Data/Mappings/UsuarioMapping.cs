@@ -44,21 +44,6 @@ public class UsuarioMapping : IEntityTypeConfiguration<Usuario>
             .Property(u => u.Bloqueado)
             .IsRequired()
             .HasDefaultValue(false);
-
-        builder
-            .Property(u => u.DiasBloqueado)
-            .IsRequired()
-            .HasDefaultValue(0);
-        
-        builder
-            .Property(u => u.DataInicioBloqueio)
-            .IsRequired(false)
-            .HasColumnType("DATE");
-        
-        builder
-            .Property(u => u.DataFimBloqueio)
-            .IsRequired(false)
-            .HasColumnType("DATE");
         
         builder
             .Property(u => u.CriadoEm)
