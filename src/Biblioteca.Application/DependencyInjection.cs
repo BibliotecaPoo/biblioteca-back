@@ -17,6 +17,7 @@ public static class DependencyInjection
     public static void SetupSettings(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
+        services.Configure<StorageSettings>(configuration.GetSection("StorageSettings"));
     }
 
     public static void ConfigureApplication(this IServiceCollection services, IConfiguration configuration)

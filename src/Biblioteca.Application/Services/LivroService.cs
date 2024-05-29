@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Biblioteca.Application.Configuration;
 using Biblioteca.Application.Contracts.Services;
 using Biblioteca.Application.DTOs.Livro;
 using Biblioteca.Application.Notifications;
@@ -7,17 +8,20 @@ using Biblioteca.Domain.Entities;
 using Biblioteca.Domain.Enums;
 using Biblioteca.Domain.Validators.Livro;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 
 namespace Biblioteca.Application.Services;
 
 public class LivroService : BaseService, ILivroService
 {
     private readonly ILivroRepository _livroRepository;
+    private readonly string _imageFolderPath;
 
-    public LivroService(INotificator notificator, IMapper mapper, ILivroRepository livroRepository) : base(notificator,
-        mapper)
+    public LivroService(INotificator notificator, IMapper mapper, ILivroRepository livroRepository,
+        IOptions<StorageSettings> storageSettings) : base(notificator, mapper)
     {
         _livroRepository = livroRepository;
+        _imageFolderPath = storageSettings.Value.ImageFolderPath;
     }
 
     public async Task<LivroDto?> Adicionar(AdicionarLivroDto dto)
@@ -70,13 +74,13 @@ public class LivroService : BaseService, ILivroService
 
             if (!string.IsNullOrEmpty(livro.NomeArquivoCapa))
             {
-                var caminhoImagemAnterior = Path.Combine("/home/guilherme/dev/imagens", livro.NomeArquivoCapa);
+                var caminhoImagemAnterior = Path.Combine(_imageFolderPath, livro.NomeArquivoCapa);
                 if (File.Exists(caminhoImagemAnterior))
                     File.Delete(caminhoImagemAnterior);
             }
 
             var nomeArquivo = DateTime.Now.Ticks + "_" + Path.GetFileName(file.FileName);
-            var caminhoCompleto = Path.Combine("/home/guilherme/dev/imagens", nomeArquivo);
+            var caminhoCompleto = Path.Combine(_imageFolderPath, nomeArquivo);
 
             await using (var stream = new FileStream(caminhoCompleto, FileMode.Create))
             {
@@ -84,7 +88,6 @@ public class LivroService : BaseService, ILivroService
             }
 
             livro.NomeArquivoCapa = nomeArquivo;
-
             _livroRepository.Atualizar(livro);
         }
 

@@ -30,7 +30,7 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
     {
         var info = new OpenApiInfo
         {
-            Title = "Biblioteca API",
+            Title = "Biblioteca Acadêmica API",
             Version = description.ApiVersion.ToString()
         };
 

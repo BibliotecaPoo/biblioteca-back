@@ -1,9 +1,11 @@
 ﻿using Biblioteca.API.Responses;
+using Biblioteca.Application.Configuration;
 using Biblioteca.Application.Contracts.Services;
 using Biblioteca.Application.DTOs.Livro;
 using Biblioteca.Application.Notifications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Biblioteca.API.Controllers;
@@ -13,10 +15,13 @@ namespace Biblioteca.API.Controllers;
 public class LivroController : BaseController
 {
     private readonly ILivroService _livroService;
+    private readonly string _imageFolderPath;
 
-    public LivroController(INotificator notificator, ILivroService livroService) : base(notificator)
+    public LivroController(INotificator notificator, ILivroService livroService,
+        IOptions<StorageSettings> storageSettings) : base(notificator)
     {
         _livroService = livroService;
+        _imageFolderPath = storageSettings.Value.ImageFolderPath;
     }
 
     [HttpPost]
@@ -68,7 +73,7 @@ public class LivroController : BaseController
         if (string.IsNullOrEmpty(livro.NomeArquivoCapa))
             return BadRequest("Ainda não foi adicionada uma imagem de capa para essa livro.");
 
-        var caminhoCompleto = Path.Combine("/home/guilherme/dev/imagens", livro.NomeArquivoCapa);
+        var caminhoCompleto = Path.Combine(_imageFolderPath, livro.NomeArquivoCapa);
         if (!System.IO.File.Exists(caminhoCompleto))
             return NotFound();
 
