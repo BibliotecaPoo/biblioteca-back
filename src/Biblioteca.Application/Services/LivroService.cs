@@ -156,6 +156,12 @@ public class LivroService : BaseService, ILivroService
 
     private async Task<bool> ValidacoesParaAtualizarLivro(int id, AtualizarLivroDto dto)
     {
+        if (id != dto.Id)
+        {
+            Notificator.Handle("O id informado na url deve ser igual ao id informado no json.");
+            return false;
+        }
+        
         var livroExistente = await _livroRepository.ObterPorId(id);
         if (livroExistente == null)
         {

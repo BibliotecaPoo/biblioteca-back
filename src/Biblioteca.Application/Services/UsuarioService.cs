@@ -105,6 +105,12 @@ public class UsuarioService : BaseService, IUsuarioService
 
     private async Task<bool> ValidacoesParaAtualizarUsuario(int id, AtualizarUsuarioDto dto)
     {
+        if (id != dto.Id)
+        {
+            Notificator.Handle("O id informado na url deve ser igual ao id informado no json.");
+            return false;
+        }
+        
         var usuarioExistente = await _usuarioRepository.ObterPorId(id);
         if (usuarioExistente == null)
         {

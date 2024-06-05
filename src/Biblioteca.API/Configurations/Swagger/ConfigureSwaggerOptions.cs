@@ -28,10 +28,25 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
 
     private static OpenApiInfo CreateInfoForApiVersion(ApiVersionDescription description)
     {
+        var contact = new OpenApiContact
+        {
+            Name = "Guilherme Silveira",
+            Email = "guilhermesilveirasousa@gmail.com",
+            Url = new Uri("https://github.com/guilheermesilveira")
+        };
+
+        var license = new OpenApiLicense
+        {
+            Name = "Free License",
+            Url = new Uri("https://github.com/guilheermesilveira")
+        };
+        
         var info = new OpenApiInfo
         {
             Title = "Biblioteca Acadêmica API",
-            Version = description.ApiVersion.ToString()
+            Version = description.ApiVersion.ToString(),
+            Contact = contact,
+            License = license
         };
 
         if (description.IsDeprecated)

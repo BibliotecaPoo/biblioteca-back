@@ -114,6 +114,12 @@ public class EmprestimoService : BaseService, IEmprestimoService
 
     public async Task<EmprestimoDto?> RealizarRenovacao(int id, RealizarRenovacaoOuEntregaDto dto)
     {
+        if (id != dto.Id)
+        {
+            Notificator.Handle("O id informado na url deve ser igual ao id informado no json.");
+            return null;
+        }
+        
         var emprestimo = await _emprestimoRepository.ObterPorId(id);
         if (emprestimo == null)
         {
@@ -172,6 +178,12 @@ public class EmprestimoService : BaseService, IEmprestimoService
 
     public async Task<EmprestimoDto?> RealizarEntrega(int id, RealizarRenovacaoOuEntregaDto dto)
     {
+        if (id != dto.Id)
+        {
+            Notificator.Handle("O id informado na url deve ser igual ao id informado no json.");
+            return null;
+        }
+        
         var emprestimo = await _emprestimoRepository.ObterPorId(id);
         if (emprestimo == null)
         {
