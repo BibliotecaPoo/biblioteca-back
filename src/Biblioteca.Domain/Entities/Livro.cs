@@ -10,8 +10,8 @@ public class Livro : Entity
     public string Editora { get; set; } = null!;
     public int AnoPublicacao { get; set; }
     public int QuantidadeExemplaresDisponiveisEmEstoque { get; set; }
-    public int QuantidadeExemplaresDisponiveisParaEmprestimo { get; set; }
-    public EStatusLivro StatusLivro { get; set; }
+    public int? QuantidadeExemplaresDisponiveisParaEmprestimo { get; set; }
+    public EStatusLivro? StatusLivro { get; set; }
     public string? NomeArquivoCapa { get; set; }
 
     // Relation

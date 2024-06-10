@@ -35,7 +35,7 @@ public class EmprestimoService : BaseService, IEmprestimoService
             return null;
         }
 
-        if (usuario.Bloqueado)
+        if (usuario.Bloqueado == true)
         {
             Notificator.Handle("O usuário está temporariamente impedido de realizar empréstimos ou renovações.");
             return null;
@@ -128,7 +128,7 @@ public class EmprestimoService : BaseService, IEmprestimoService
         }
 
         var usuario = await _usuarioRepository.ObterPorId(emprestimo.UsuarioId);
-        if (usuario!.Bloqueado)
+        if (usuario!.Bloqueado == true)
         {
             Notificator.Handle("O usuário está temporariamente impedido de realizar empréstimos ou renovações.");
             return null;
@@ -225,7 +225,7 @@ public class EmprestimoService : BaseService, IEmprestimoService
         
         _emprestimoRepository.Atualizar(emprestimo);
         
-        if (usuario.Bloqueado)
+        if (usuario?.Bloqueado == true)
         {
             var emprestimoAtrasado = await _emprestimoRepository.FirstOrDefault(e =>
                 e.UsuarioId == usuario.Id &&

@@ -6,7 +6,7 @@ public class UsuarioDto
     public string Nome { get; set; } = null!;
     public string Matricula { get; set; } = null!;
     public string Email { get; set; } = null!;
-    public int QuantidadeEmprestimosPermitida { get; set; }
-    public int QuantidadeEmprestimosRealizados { get; set; }
+    public int? QuantidadeEmprestimosPermitida { get; set; }
+    public int? QuantidadeEmprestimosRealizados { get; set; }
     public bool Bloqueado { get; set; }
 }
