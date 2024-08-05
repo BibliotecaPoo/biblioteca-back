@@ -27,5 +27,10 @@ public class ValidadorParaAtualizarLivro : AbstractValidator<Entities.Livro>
             .Length(3, 50)
             .WithMessage("A editora deve conter entre {MinLength} e {MaxLength} caracteres.")
             .When(l => !string.IsNullOrEmpty(l.Editora));
+
+        RuleFor(l => l.Categoria)
+            .Length(3, 50)
+            .WithMessage("A categoria deve conter entre {MinLength} e {MaxLength} caracteres.")
+            .When(l => !string.IsNullOrEmpty(l.Categoria));
     }
 }

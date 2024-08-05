@@ -1,6 +1,8 @@
-﻿using Biblioteca.Domain.Contracts.Repositories;
+﻿using Biblioteca.Domain.Contracts;
+using Biblioteca.Domain.Contracts.Repositories;
 using Biblioteca.Domain.Entities;
 using Biblioteca.Infra.Data.Context;
+using Biblioteca.Infra.Data.Paginacao;
 using Microsoft.EntityFrameworkCore;
 
 namespace Biblioteca.Infra.Data.Repositories;
@@ -17,18 +19,49 @@ public class LivroRepository : Repository<Livro>, ILivroRepository
     public void Atualizar(Livro livro)
         => Context.Livros.Update(livro);
 
+    public void Deletar(Livro livro)
+        => Context.Livros.Remove(livro);
+
+    public async Task<IPaginacao<Livro>> Pesquisar(int? id, string? titulo, string? autor, string? editora,
+        string? categoria, int quantidadeDeItensPorPagina = 10, int paginaAtual = 1)
+    {
+        var consulta = Context.Livros
+            .AsNoTracking()
+            .AsQueryable();
+
+        if (id.HasValue)
+            consulta = consulta.Where(l => l.Id == id);
+
+        if (!string.IsNullOrEmpty(titulo))
+            consulta = consulta.Where(l => l.Titulo.Contains(titulo));
+
+        if (!string.IsNullOrEmpty(autor))
+            consulta = consulta.Where(l => l.Autor.Contains(autor));
+
+        if (!string.IsNullOrEmpty(editora))
+            consulta = consulta.Where(l => l.Editora.Contains(editora));
+
+        if (!string.IsNullOrEmpty(categoria))
+            consulta = consulta.Where(l => l.Categoria.Contains(categoria));
+
+        var resultadoPaginado = new Paginacao<Livro>
+        {
+            TotalDeItens = await consulta.CountAsync(),
+            QuantidadeDeItensPorPagina = quantidadeDeItensPorPagina,
+            PaginaAtual = paginaAtual,
+            Itens = await consulta.Skip((paginaAtual - 1) * quantidadeDeItensPorPagina).Take(quantidadeDeItensPorPagina)
+                .ToListAsync()
+        };
+
+        var quantidadeDePaginas = (double)resultadoPaginado.TotalDeItens / quantidadeDeItensPorPagina;
+        resultadoPaginado.QuantidadeDePaginas = (int)Math.Ceiling(quantidadeDePaginas);
+
+        return resultadoPaginado;
+    }
+
     public async Task<Livro?> ObterPorId(int id)
         => await Context.Livros.AsNoTrackingWithIdentityResolution().FirstOrDefaultAsync(l => l.Id == id);
-
-    public async Task<List<Livro>> ObterPorTitulo(string titulo)
-        => await Context.Livros.AsNoTrackingWithIdentityResolution().Where(l => l.Titulo.Contains(titulo)).ToListAsync();
-
-    public async Task<List<Livro>> ObterPorAutor(string autor)
-        => await Context.Livros.AsNoTrackingWithIdentityResolution().Where(l => l.Autor.Contains(autor)).ToListAsync();
-
-    public async Task<List<Livro>> ObterPorEditora(string editora)
-        => await Context.Livros.AsNoTrackingWithIdentityResolution().Where(l => l.Editora.Contains(editora)).ToListAsync();
-
+    
     public async Task<List<Livro>> ObterTodos()
         => await Context.Livros.AsNoTrackingWithIdentityResolution().ToListAsync();
 }

@@ -32,6 +32,11 @@ public class LivroMapping : IEntityTypeConfiguration<Livro>
             .HasColumnType("VARCHAR(50)");
 
         builder
+            .Property(l => l.Categoria)
+            .IsRequired()
+            .HasColumnType("VARCHAR(50)");
+
+        builder
             .Property(l => l.AnoPublicacao)
             .IsRequired();
 

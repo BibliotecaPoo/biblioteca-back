@@ -2,6 +2,7 @@
 using Biblioteca.Application.Configuration;
 using Biblioteca.Application.Contracts.Services;
 using Biblioteca.Application.DTOs.Livro;
+using Biblioteca.Application.DTOs.Paginacao;
 using Biblioteca.Application.Notifications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -58,6 +59,18 @@ public class LivroController : BaseController
         return CreatedResponse("", adicionarCapa);
     }
 
+    [HttpDelete("{id}")]
+    [SwaggerOperation(Summary = "Deletar um livro.", Tags = new[] { "Administração - Livros" })]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Deletar(int id)
+    {
+        await _livroService.Deletar(id);
+        return NoContentResponse();
+    }
+
     [HttpGet("Download-Capa/{id}")]
     [SwaggerOperation(Summary = "Baixar a capa de um livro.", Tags = new[] { "Administração - Livros" })]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -83,44 +96,13 @@ public class LivroController : BaseController
         return File(System.IO.File.OpenRead(caminhoCompleto), conteudo, nomeArquivo);
     }
 
-    [HttpGet("Obter-Por-Id/{id}")]
-    [SwaggerOperation(Summary = "Obter um livro pelo id.", Tags = new[] { "Administração - Livros" })]
-    [ProducesResponseType(typeof(LivroDto), StatusCodes.Status200OK)]
+    [HttpGet("Pesquisar")]
+    [SwaggerOperation(Summary = "Pesquisar livros.", Tags = new[] { "Administração - Livros" })]
+    [ProducesResponseType(typeof(PaginacaoDto<LivroDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> ObterPorId(int id)
+    public async Task<IActionResult> Pesquisar([FromQuery] PesquisarLivroDto dto)
     {
-        var obterLivro = await _livroService.ObterPorId(id);
-        return OkResponse(obterLivro);
-    }
-
-    [HttpGet("Obter-Por-Titulo/{titulo}")]
-    [SwaggerOperation(Summary = "Obter livros com o mesmo título.", Tags = new[] { "Administração - Livros" })]
-    [ProducesResponseType(typeof(LivroDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> ObterPorTitulo(string titulo)
-    {
-        var obterLivros = await _livroService.ObterPorTitulo(titulo);
-        return OkResponse(obterLivros);
-    }
-
-    [HttpGet("Obter-Por-Autor/{autor}")]
-    [SwaggerOperation(Summary = "Obter livros com o mesmo autor.", Tags = new[] { "Administração - Livros" })]
-    [ProducesResponseType(typeof(LivroDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> ObterPorAutor(string autor)
-    {
-        var obterLivros = await _livroService.ObterPorAutor(autor);
-        return OkResponse(obterLivros);
-    }
-
-    [HttpGet("Obter-Por-Editora/{editora}")]
-    [SwaggerOperation(Summary = "Obter livros com a mesma editora.", Tags = new[] { "Administração - Livros" })]
-    [ProducesResponseType(typeof(LivroDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> ObterPorEditora(string editora)
-    {
-        var obterLivros = await _livroService.ObterPorEditora(editora);
+        var obterLivros = await _livroService.Pesquisar(dto);
         return OkResponse(obterLivros);
     }
 

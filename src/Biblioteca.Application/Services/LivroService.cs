@@ -2,6 +2,8 @@
 using Biblioteca.Application.Configuration;
 using Biblioteca.Application.Contracts.Services;
 using Biblioteca.Application.DTOs.Livro;
+using Biblioteca.Application.DTOs.Paginacao;
+using Biblioteca.Application.DTOs.Usuario;
 using Biblioteca.Application.Notifications;
 using Biblioteca.Domain.Contracts.Repositories;
 using Biblioteca.Domain.Entities;
@@ -30,7 +32,8 @@ public class LivroService : BaseService, ILivroService
             return null;
 
         var adicionarLivro = Mapper.Map<Livro>(dto);
-        adicionarLivro.QuantidadeExemplaresDisponiveisParaEmprestimo = adicionarLivro.QuantidadeExemplaresDisponiveisEmEstoque;
+        adicionarLivro.QuantidadeExemplaresDisponiveisParaEmprestimo =
+            adicionarLivro.QuantidadeExemplaresDisponiveisEmEstoque;
         adicionarLivro.StatusLivro = EStatusLivro.Disponivel;
 
         _livroRepository.Adicionar(adicionarLivro);
@@ -94,6 +97,41 @@ public class LivroService : BaseService, ILivroService
         return await CommitChanges() ? Mapper.Map<LivroDto>(livro) : null;
     }
 
+    public async Task Deletar(int id)
+    {
+        var obterLivro = await _livroRepository.ObterPorId(id);
+        if (obterLivro == null)
+        {
+            Notificator.HandleNotFoundResource();
+            return;
+        }
+
+        if (obterLivro.QuantidadeExemplaresDisponiveisParaEmprestimo <
+            obterLivro.QuantidadeExemplaresDisponiveisEmEstoque)
+        {
+            Notificator.Handle("Não é possível deletar o livro, pois o mesmo possui exemplares emnprestados.");
+            return;
+        }
+
+        _livroRepository.Deletar(obterLivro);
+        await CommitChanges();
+    }
+
+    public async Task<PaginacaoDto<LivroDto>> Pesquisar(PesquisarLivroDto dto)
+    {
+        var resultadoPaginado = await _livroRepository.Pesquisar(dto.Id, dto.Titulo, dto.Autor,
+            dto.Editora, dto.Categoria, dto.QuantidadeDeItensPorPagina, dto.PaginaAtual);
+
+        return new PaginacaoDto<LivroDto>
+        {
+            TotalDeItens = resultadoPaginado.TotalDeItens,
+            QuantidadeDeItensPorPagina = resultadoPaginado.QuantidadeDeItensPorPagina,
+            QuantidadeDePaginas = resultadoPaginado.QuantidadeDePaginas,
+            PaginaAtual = resultadoPaginado.PaginaAtual,
+            Itens = Mapper.Map<List<LivroDto>>(resultadoPaginado.Itens)
+        };
+    }
+
     public async Task<LivroDto?> ObterPorId(int id)
     {
         var obterLivro = await _livroRepository.ObterPorId(id);
@@ -102,24 +140,6 @@ public class LivroService : BaseService, ILivroService
 
         Notificator.HandleNotFoundResource();
         return null;
-    }
-
-    public async Task<List<LivroDto>> ObterPorTitulo(string titulo)
-    {
-        var obterLivros = await _livroRepository.ObterPorTitulo(titulo);
-        return Mapper.Map<List<LivroDto>>(obterLivros);
-    }
-
-    public async Task<List<LivroDto>> ObterPorAutor(string autor)
-    {
-        var obterLivros = await _livroRepository.ObterPorAutor(autor);
-        return Mapper.Map<List<LivroDto>>(obterLivros);
-    }
-
-    public async Task<List<LivroDto>> ObterPorEditora(string editora)
-    {
-        var obterLivros = await _livroRepository.ObterPorEditora(editora);
-        return Mapper.Map<List<LivroDto>>(obterLivros);
     }
 
     public async Task<List<LivroDto>> ObterTodos()
@@ -141,9 +161,9 @@ public class LivroService : BaseService, ILivroService
         }
 
         var livroIgual = await _livroRepository.FirstOrDefault(l =>
-            l.Titulo == dto.Titulo && 
-            l.Autor == dto.Autor && 
-            l.Edicao == dto.Edicao && 
+            l.Titulo == dto.Titulo &&
+            l.Autor == dto.Autor &&
+            l.Edicao == dto.Edicao &&
             l.Editora == dto.Editora);
         if (livroIgual != null)
         {
@@ -161,7 +181,7 @@ public class LivroService : BaseService, ILivroService
             Notificator.Handle("O id informado na url deve ser igual ao id informado no json.");
             return false;
         }
-        
+
         var livroExistente = await _livroRepository.ObterPorId(id);
         if (livroExistente == null)
         {
@@ -169,7 +189,8 @@ public class LivroService : BaseService, ILivroService
             return false;
         }
 
-        if (livroExistente.QuantidadeExemplaresDisponiveisParaEmprestimo < livroExistente.QuantidadeExemplaresDisponiveisEmEstoque)
+        if (livroExistente.QuantidadeExemplaresDisponiveisParaEmprestimo <
+            livroExistente.QuantidadeExemplaresDisponiveisEmEstoque)
         {
             Notificator.Handle("Não é possível atualizar um livro que tenha algum exemplar emprestado ou renovado.");
             return false;
@@ -206,24 +227,10 @@ public class LivroService : BaseService, ILivroService
             return false;
         }
 
-        if (!string.IsNullOrEmpty(dto.Titulo) && !string.IsNullOrEmpty(dto.Autor) &&
-            !string.IsNullOrEmpty(dto.Edicao) && !string.IsNullOrEmpty(dto.Editora))
-        {
-            var livroIgual = await _livroRepository.FirstOrDefault(l =>
-                l.Titulo == dto.Titulo &&
-                l.Autor == dto.Autor &&
-                l.Edicao == dto.Edicao &&
-                l.Editora == dto.Editora);
-            if (livroIgual != null)
-            {
-                Notificator.Handle("Já existe um livro cadastrado com o título, autor, edição e editora informados.");
-                return false;
-            }
-        }
-
         if (string.IsNullOrEmpty(dto.Titulo) && string.IsNullOrEmpty(dto.Autor) &&
             string.IsNullOrEmpty(dto.Edicao) && string.IsNullOrEmpty(dto.Editora) &&
-            !dto.AnoPublicacao.HasValue && !dto.QuantidadeExemplaresDisponiveisEmEstoque.HasValue)
+            string.IsNullOrEmpty(dto.Categoria) && !dto.AnoPublicacao.HasValue &&
+            !dto.QuantidadeExemplaresDisponiveisEmEstoque.HasValue)
         {
             Notificator.Handle("Nenhum campo fornecido para atualização.");
             return false;

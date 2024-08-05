@@ -7,6 +7,7 @@ public class AtualizarLivroDto
     public string? Autor { get; set; }
     public string? Edicao { get; set; }
     public string? Editora { get; set; }
+    public string? Categoria { get; set; }
     public int? AnoPublicacao { get; set; }
     public int? QuantidadeExemplaresDisponiveisEmEstoque { get; set; }
 }

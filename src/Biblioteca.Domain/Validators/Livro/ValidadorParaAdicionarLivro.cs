@@ -32,6 +32,12 @@ public class ValidadorParaAdicionarLivro : AbstractValidator<Entities.Livro>
             .Length(3, 50)
             .WithMessage("A editora deve conter entre {MinLength} e {MaxLength} caracteres.");
 
+        RuleFor(l => l.Categoria)
+            .NotNull()
+            .WithMessage("A categoria não pode ser nula.")
+            .Length(3, 50)
+            .WithMessage("A categoria deve conter entre {MinLength} e {MaxLength} caracteres.");
+
         RuleFor(l => l.AnoPublicacao)
             .NotNull()
             .WithMessage("O ano de publicação não pode ser nulo.")
