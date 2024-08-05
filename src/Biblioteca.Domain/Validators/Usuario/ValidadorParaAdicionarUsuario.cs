@@ -18,6 +18,12 @@ public class ValidadorParaAdicionarUsuario : AbstractValidator<Domain.Entities.U
             .Matches("^[0-9]{6}$")
             .WithMessage("A matrícula deve conter exatamente 6 dígitos numéricos.");
 
+        RuleFor(u => u.Curso)
+            .NotNull()
+            .WithMessage("O curso não pode ser nulo.")
+            .Length(3, 100)
+            .WithMessage("O curso deve conter entre {MinLength} e {MaxLength} caracteres.");
+
         RuleFor(u => u.Email)
             .NotNull()
             .WithMessage("O email não pode ser nulo.")

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Biblioteca.Application.Contracts.Services;
+using Biblioteca.Application.DTOs.Paginacao;
 using Biblioteca.Application.DTOs.Usuario;
 using Biblioteca.Application.Notifications;
 using Biblioteca.Domain.Contracts.Repositories;
@@ -46,26 +47,38 @@ public class UsuarioService : BaseService, IUsuarioService
         return await CommitChanges() ? Mapper.Map<UsuarioDto>(atualizarUsuario) : null;
     }
 
-    public async Task<UsuarioDto?> ObterPorId(int id)
+    public async Task Deletar(int id)
     {
         var obterUsuario = await _usuarioRepository.ObterPorId(id);
-        if (obterUsuario != null)
-            return Mapper.Map<UsuarioDto>(obterUsuario);
+        if (obterUsuario == null)
+        {
+            Notificator.HandleNotFoundResource();
+            return;
+        }
 
-        Notificator.HandleNotFoundResource();
-        return null;
+        if (obterUsuario.QuantidadeEmprestimosRealizados > 0)
+        {
+            Notificator.Handle("O usuário possui livros emprestados, não é possível deletá-lo.");
+            return;
+        }
+
+        _usuarioRepository.Deletar(obterUsuario);
+        await CommitChanges();
     }
 
-    public async Task<List<UsuarioDto>> ObterPorEmail(string email)
+    public async Task<PaginacaoDto<UsuarioDto>> Pesquisar(PesquisarUsuarioDto dto)
     {
-        var obterUsuarios = await _usuarioRepository.ObterPorEmail(email);
-        return Mapper.Map<List<UsuarioDto>>(obterUsuarios);
-    }
+        var resultadoPaginado = await _usuarioRepository.Pesquisar(dto.Id, dto.Nome, dto.Email, dto.Matricula,
+            dto.Curso, dto.QuantidadeDeItensPorPagina, dto.PaginaAtual);
 
-    public async Task<List<UsuarioDto>> ObterPorMatricula(string matricula)
-    {
-        var obterUsuarios = await _usuarioRepository.ObterPorMatricula(matricula);
-        return Mapper.Map<List<UsuarioDto>>(obterUsuarios);
+        return new PaginacaoDto<UsuarioDto>
+        {
+            TotalDeItens = resultadoPaginado.TotalDeItens,
+            QuantidadeDeItensPorPagina = resultadoPaginado.QuantidadeDeItensPorPagina,
+            QuantidadeDePaginas = resultadoPaginado.QuantidadeDePaginas,
+            PaginaAtual = resultadoPaginado.PaginaAtual,
+            Itens = Mapper.Map<List<UsuarioDto>>(resultadoPaginado.Itens)
+        };
     }
 
     public async Task<List<UsuarioDto>> ObterTodos()
@@ -110,7 +123,7 @@ public class UsuarioService : BaseService, IUsuarioService
             Notificator.Handle("O id informado na url deve ser igual ao id informado no json.");
             return false;
         }
-        
+
         var usuarioExistente = await _usuarioRepository.ObterPorId(id);
         if (usuarioExistente == null)
         {
@@ -128,27 +141,7 @@ public class UsuarioService : BaseService, IUsuarioService
             return false;
         }
 
-        if (!string.IsNullOrEmpty(dto.Matricula))
-        {
-            var usuarioComMatriculaExistente = await _usuarioRepository.FirstOrDefault(u => u.Matricula == dto.Matricula);
-            if (usuarioComMatriculaExistente != null)
-            {
-                Notificator.Handle("Já existe um usuário cadastrado com a matrícula informada.");
-                return false;
-            }
-        }
-
-        if (!string.IsNullOrEmpty(dto.Email))
-        {
-            var usuarioComEmailExistente = await _usuarioRepository.FirstOrDefault(u => u.Email == dto.Email);
-            if (usuarioComEmailExistente != null)
-            {
-                Notificator.Handle("Já existe um usuário cadastrado com o email informado.");
-                return false;
-            }
-        }
-
-        if (string.IsNullOrEmpty(dto.Nome) && string.IsNullOrEmpty(dto.Matricula) && 
+        if (string.IsNullOrEmpty(dto.Nome) && string.IsNullOrEmpty(dto.Matricula) &&
             string.IsNullOrEmpty(dto.Email) && string.IsNullOrEmpty(dto.Senha))
         {
             Notificator.Handle("Nenhum campo fornecido para atualização.");

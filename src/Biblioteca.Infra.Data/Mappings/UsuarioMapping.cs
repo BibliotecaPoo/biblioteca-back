@@ -22,6 +22,11 @@ public class UsuarioMapping : IEntityTypeConfiguration<Usuario>
             .HasColumnType("CHAR(6)");
 
         builder
+            .Property(u => u.Curso)
+            .IsRequired()
+            .HasColumnType("VARCHAR(100)");
+
+        builder
             .Property(u => u.Email)
             .IsRequired()
             .HasColumnType("VARCHAR(100)");
@@ -39,12 +44,12 @@ public class UsuarioMapping : IEntityTypeConfiguration<Usuario>
             .Property(u => u.QuantidadeEmprestimosRealizados)
             .IsRequired()
             .HasDefaultValue(0);
-        
+
         builder
             .Property(u => u.Bloqueado)
             .IsRequired()
             .HasDefaultValue(false);
-        
+
         builder
             .Property(u => u.CriadoEm)
             .ValueGeneratedOnAdd()
