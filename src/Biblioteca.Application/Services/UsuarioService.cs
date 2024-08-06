@@ -90,7 +90,7 @@ public class UsuarioService : BaseService, IUsuarioService
     private async Task<bool> ValidacoesParaAdicionarUsuario(AdicionarUsuarioDto dto)
     {
         var usuario = Mapper.Map<Usuario>(dto);
-        var validador = new ValidadorParaAdicionarUsuario();
+        var validador = new UsuarioValidator();
 
         var resultadoDaValidacao = await validador.ValidateAsync(usuario);
         if (!resultadoDaValidacao.IsValid)
@@ -132,19 +132,12 @@ public class UsuarioService : BaseService, IUsuarioService
         }
 
         var usuario = Mapper.Map<Usuario>(dto);
-        var validador = new ValidadorParaAtualizarUsuario();
+        var validador = new UsuarioValidator();
 
         var resultadoDaValidacao = await validador.ValidateAsync(usuario);
         if (!resultadoDaValidacao.IsValid)
         {
             Notificator.Handle(resultadoDaValidacao.Errors);
-            return false;
-        }
-
-        if (string.IsNullOrEmpty(dto.Nome) && string.IsNullOrEmpty(dto.Matricula) &&
-            string.IsNullOrEmpty(dto.Email) && string.IsNullOrEmpty(dto.Senha))
-        {
-            Notificator.Handle("Nenhum campo fornecido para atualização.");
             return false;
         }
 
@@ -158,6 +151,9 @@ public class UsuarioService : BaseService, IUsuarioService
 
         if (!string.IsNullOrEmpty(dto.Matricula))
             usuario.Matricula = dto.Matricula;
+
+        if (!string.IsNullOrEmpty(dto.Curso))
+            usuario.Curso = dto.Curso;
 
         if (!string.IsNullOrEmpty(dto.Email))
             usuario.Email = dto.Email;

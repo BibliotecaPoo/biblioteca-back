@@ -2,9 +2,9 @@
 
 namespace Biblioteca.Domain.Validators.Livro;
 
-public class ValidadorParaAdicionarLivro : AbstractValidator<Entities.Livro>
+public class LivroValidator : AbstractValidator<Entities.Livro>
 {
-    public ValidadorParaAdicionarLivro()
+    public LivroValidator()
     {
         RuleFor(l => l.Titulo)
             .NotNull()

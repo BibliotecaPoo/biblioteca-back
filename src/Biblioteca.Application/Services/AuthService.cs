@@ -81,7 +81,7 @@ public class AuthService : BaseService, IAuthService
     private async Task<bool> ValidacoesParaLogin(LoginDto dto)
     {
         var administrador = Mapper.Map<Administrador>(dto);
-        var validador = new ValidadorParaLogin();
+        var validador = new LoginValidator();
 
         var resultadoDaValidacao = await validador.ValidateAsync(administrador);
         if (!resultadoDaValidacao.IsValid)

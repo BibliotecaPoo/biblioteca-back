@@ -2,9 +2,9 @@
 
 namespace Biblioteca.Domain.Validators.Usuario;
 
-public class ValidadorParaAdicionarUsuario : AbstractValidator<Domain.Entities.Usuario>
+public class UsuarioValidator : AbstractValidator<Domain.Entities.Usuario>
 {
-    public ValidadorParaAdicionarUsuario()
+    public UsuarioValidator()
     {
         RuleFor(u => u.Nome)
             .NotNull()

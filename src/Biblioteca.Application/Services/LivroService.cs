@@ -3,7 +3,6 @@ using Biblioteca.Application.Configuration;
 using Biblioteca.Application.Contracts.Services;
 using Biblioteca.Application.DTOs.Livro;
 using Biblioteca.Application.DTOs.Paginacao;
-using Biblioteca.Application.DTOs.Usuario;
 using Biblioteca.Application.Notifications;
 using Biblioteca.Domain.Contracts.Repositories;
 using Biblioteca.Domain.Entities;
@@ -151,7 +150,7 @@ public class LivroService : BaseService, ILivroService
     private async Task<bool> ValidacoesParaAdicionarLivro(AdicionarLivroDto dto)
     {
         var livro = Mapper.Map<Livro>(dto);
-        var validador = new ValidadorParaAdicionarLivro();
+        var validador = new LivroValidator();
 
         var resultadoDaValidacao = await validador.ValidateAsync(livro);
         if (!resultadoDaValidacao.IsValid)
@@ -197,42 +196,12 @@ public class LivroService : BaseService, ILivroService
         }
 
         var livro = Mapper.Map<Livro>(dto);
-        var validador = new ValidadorParaAtualizarLivro();
+        var validador = new LivroValidator();
 
         var resultadoDaValidacao = await validador.ValidateAsync(livro);
         if (!resultadoDaValidacao.IsValid)
         {
             Notificator.Handle(resultadoDaValidacao.Errors);
-            return false;
-        }
-
-        if (dto.AnoPublicacao.HasValue)
-        {
-            if (dto.AnoPublicacao <= 0)
-            {
-                Notificator.Handle("O ano de publicação deve ser maior que 0.");
-                return false;
-            }
-
-            if (dto.AnoPublicacao > DateTime.Now.Year)
-            {
-                Notificator.Handle("O ano de publicação não pode ser no futuro.");
-                return false;
-            }
-        }
-
-        if (dto.QuantidadeExemplaresDisponiveisEmEstoque.HasValue && dto.QuantidadeExemplaresDisponiveisEmEstoque <= 0)
-        {
-            Notificator.Handle("A quantidade de exemplares deve ser maior que 0.");
-            return false;
-        }
-
-        if (string.IsNullOrEmpty(dto.Titulo) && string.IsNullOrEmpty(dto.Autor) &&
-            string.IsNullOrEmpty(dto.Edicao) && string.IsNullOrEmpty(dto.Editora) &&
-            string.IsNullOrEmpty(dto.Categoria) && !dto.AnoPublicacao.HasValue &&
-            !dto.QuantidadeExemplaresDisponiveisEmEstoque.HasValue)
-        {
-            Notificator.Handle("Nenhum campo fornecido para atualização.");
             return false;
         }
 
@@ -252,6 +221,9 @@ public class LivroService : BaseService, ILivroService
 
         if (!string.IsNullOrEmpty(dto.Editora))
             livro.Editora = dto.Editora;
+
+        if (!string.IsNullOrEmpty(dto.Categoria))
+            livro.Categoria = dto.Categoria;
 
         if (dto.AnoPublicacao.HasValue)
             livro.AnoPublicacao = (int)dto.AnoPublicacao;

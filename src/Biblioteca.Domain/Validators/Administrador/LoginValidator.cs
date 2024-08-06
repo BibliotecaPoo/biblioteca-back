@@ -2,9 +2,9 @@
 
 namespace Biblioteca.Domain.Validators.Administrador;
 
-public class ValidadorParaLogin : AbstractValidator<Domain.Entities.Administrador>
+public class LoginValidator : AbstractValidator<Domain.Entities.Administrador>
 {
-    public ValidadorParaLogin()
+    public LoginValidator()
     {
         RuleFor(a => a.Email)
             .NotEmpty()
