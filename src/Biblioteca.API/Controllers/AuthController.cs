@@ -20,7 +20,7 @@ public class AuthController : BaseController
     }
 
     [HttpPost("Login")]
-    [SwaggerOperation(Summary = "Realizar login para autenticação.", Tags = new[] { "Autenticação" })]
+    [SwaggerOperation(Tags = new[] { "Autenticação" })]
     [ProducesResponseType(typeof(TokenDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(UnauthorizedObjectResult), StatusCodes.Status401Unauthorized)]

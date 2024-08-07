@@ -59,9 +59,6 @@ public class LivroRepository : Repository<Livro>, ILivroRepository
         return resultadoPaginado;
     }
 
-    public async Task<Livro?> ObterPorId(int id)
-        => await Context.Livros.AsNoTrackingWithIdentityResolution().FirstOrDefaultAsync(l => l.Id == id);
-    
     public async Task<List<Livro>> ObterTodos()
         => await Context.Livros.AsNoTrackingWithIdentityResolution().ToListAsync();
 }

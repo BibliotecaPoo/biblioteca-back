@@ -1,6 +1,7 @@
 using AutoMapper;
 using Biblioteca.Application.Contracts.Services;
 using Biblioteca.Application.DTOs.Emprestimo;
+using Biblioteca.Application.DTOs.Paginacao;
 using Biblioteca.Application.Notifications;
 using Biblioteca.Domain.Contracts.Repositories;
 using Biblioteca.Domain.Entities;
@@ -51,7 +52,7 @@ public class EmprestimoService : BaseService, IEmprestimoService
             _usuarioRepository.Atualizar(usuario);
 
             Notificator.Handle("O usuário possui livro(s) não devolvido(s) e atrasado(s).");
-            Notificator.Handle("O usuário será impedido de fazer empréstimos ou renovações até devolver o(s) livro(s).");
+            Notificator.Handle("O usuário será impedido de fazer empréstimos/renovações até devolver o(s) livro(s).");
             return null;
         }
 
@@ -71,7 +72,7 @@ public class EmprestimoService : BaseService, IEmprestimoService
             return null;
         }
 
-        var livro = await _livroRepository.ObterPorId(dto.LivroId);
+        var livro = await _livroRepository.FirstOrDefault(l => l.Id == dto.LivroId);
         if (livro == null)
         {
             Notificator.Handle("Livro não encontrado.");
@@ -96,6 +97,7 @@ public class EmprestimoService : BaseService, IEmprestimoService
         {
             livro.StatusLivro = EStatusLivro.Indisponivel;
         }
+
         _livroRepository.Atualizar(livro);
 
         usuario.QuantidadeEmprestimosRealizados += 1;
@@ -112,22 +114,22 @@ public class EmprestimoService : BaseService, IEmprestimoService
         return await CommitChanges() ? Mapper.Map<EmprestimoDto>(emprestimo) : null;
     }
 
-    public async Task<EmprestimoDto?> RealizarRenovacao(int id, RealizarRenovacaoOuEntregaDto dto)
+    public async Task<EmprestimoDto?> RealizarRenovacao(int id, RealizarRenovacaoDto dto)
     {
         if (id != dto.Id)
         {
             Notificator.Handle("O id informado na url deve ser igual ao id informado no json.");
             return null;
         }
-        
-        var emprestimo = await _emprestimoRepository.ObterPorId(id);
+
+        var emprestimo = await _emprestimoRepository.FirstOrDefault(e => e.Id == id);
         if (emprestimo == null)
         {
             Notificator.HandleNotFoundResource();
             return null;
         }
 
-        var usuario = await _usuarioRepository.ObterPorId(emprestimo.UsuarioId);
+        var usuario = await _usuarioRepository.FirstOrDefault(u => u.Id == emprestimo.UsuarioId);
         if (usuario!.Bloqueado == true)
         {
             Notificator.Handle("O usuário está temporariamente impedido de realizar empréstimos ou renovações.");
@@ -144,7 +146,7 @@ public class EmprestimoService : BaseService, IEmprestimoService
             _usuarioRepository.Atualizar(usuario);
 
             Notificator.Handle("O usuário possui livro(s) não devolvido(s) e atrasado(s).");
-            Notificator.Handle("O usuário será impedido de fazer empréstimos ou renovações até devolver o(s) livro(s).");
+            Notificator.Handle("O usuário será impedido de fazer empréstimos/renovações até devolver o(s) livro(s).");
             return null;
         }
 
@@ -154,7 +156,7 @@ public class EmprestimoService : BaseService, IEmprestimoService
             return null;
         }
 
-        if (emprestimo.StatusEmprestimo == EStatusEmprestimo.Entregue)
+        if (emprestimo.StatusEmprestimo is EStatusEmprestimo.Entregue or EStatusEmprestimo.EntregueComAtraso)
         {
             Notificator.Handle("O empréstimo já está como entregue. Não é possível renovar o livro.");
             return null;
@@ -176,15 +178,9 @@ public class EmprestimoService : BaseService, IEmprestimoService
         return await CommitChanges() ? Mapper.Map<EmprestimoDto>(emprestimo) : null;
     }
 
-    public async Task<EmprestimoDto?> RealizarEntrega(int id, RealizarRenovacaoOuEntregaDto dto)
+    public async Task<EmprestimoDto?> RealizarEntrega(int id)
     {
-        if (id != dto.Id)
-        {
-            Notificator.Handle("O id informado na url deve ser igual ao id informado no json.");
-            return null;
-        }
-        
-        var emprestimo = await _emprestimoRepository.ObterPorId(id);
+        var emprestimo = await _emprestimoRepository.FirstOrDefault(e => e.Id == id);
         if (emprestimo == null)
         {
             Notificator.HandleNotFoundResource();
@@ -197,16 +193,7 @@ public class EmprestimoService : BaseService, IEmprestimoService
             return null;
         }
 
-        var usuario = await _usuarioRepository.ObterPorId(emprestimo.UsuarioId);
-
-        var resultadoVerificacaoSenha = _passwordHasher.VerifyHashedPassword(usuario!, usuario!.Senha, dto.UsuarioSenha);
-        if (resultadoVerificacaoSenha == PasswordVerificationResult.Failed)
-        {
-            Notificator.Handle("Senha incorreta.");
-            return null;
-        }
-
-        var livro = await _livroRepository.ObterPorId(emprestimo.LivroId);
+        var livro = await _livroRepository.FirstOrDefault(l => l.Id == emprestimo.LivroId);
         if (livro!.StatusLivro == EStatusLivro.Indisponivel)
         {
             livro.StatusLivro = EStatusLivro.Disponivel;
@@ -215,85 +202,53 @@ public class EmprestimoService : BaseService, IEmprestimoService
         livro.QuantidadeExemplaresDisponiveisParaEmprestimo += 1;
         _livroRepository.Atualizar(livro);
 
-        usuario.QuantidadeEmprestimosRealizados -= 1;
+        var usuario = await _usuarioRepository.FirstOrDefault(u => u.Id == emprestimo.UsuarioId);
+        usuario!.QuantidadeEmprestimosRealizados -= 1;
         _usuarioRepository.Atualizar(usuario);
 
         emprestimo.DataDevolucaoRealizada = DateTime.Today;
         emprestimo.StatusEmprestimo = emprestimo.DataDevolucaoRealizada > emprestimo.DataDevolucaoPrevista
             ? EStatusEmprestimo.EntregueComAtraso
             : EStatusEmprestimo.Entregue;
-        
+
         _emprestimoRepository.Atualizar(emprestimo);
-        
-        if (usuario?.Bloqueado == true)
+
+        if (usuario.Bloqueado == true)
         {
             var emprestimoAtrasado = await _emprestimoRepository.FirstOrDefault(e =>
                 e.UsuarioId == usuario.Id &&
                 DateTime.Today > e.DataDevolucaoPrevista &&
-                (e.StatusEmprestimo == EStatusEmprestimo.Emprestado || e.StatusEmprestimo == EStatusEmprestimo.Renovado));
-            
+                (e.StatusEmprestimo == EStatusEmprestimo.Emprestado ||
+                 e.StatusEmprestimo == EStatusEmprestimo.Renovado));
+
             if (emprestimoAtrasado == null)
             {
                 usuario.Bloqueado = false;
                 _usuarioRepository.Atualizar(usuario);
             }
         }
-        
+
         return await CommitChanges() ? Mapper.Map<EmprestimoDto>(emprestimo) : null;
     }
 
-    public async Task<EmprestimoDto?> ObterPorId(int id)
+    public async Task<PaginacaoDto<EmprestimoDto>> Pesquisar(PesquisarEmprestimoDto dto)
     {
-        var obterEmprestimo = await _emprestimoRepository.ObterPorId(id);
-        if (obterEmprestimo != null)
-            return Mapper.Map<EmprestimoDto>(obterEmprestimo);
+        var resultadoPaginado = await _emprestimoRepository.Pesquisar(dto.Id, dto.UsuarioId,
+            dto.LivroId, dto.QuantidadeDeItensPorPagina, dto.PaginaAtual);
 
-        Notificator.HandleNotFoundResource();
-        return null;
+        return new PaginacaoDto<EmprestimoDto>
+        {
+            TotalDeItens = resultadoPaginado.TotalDeItens,
+            QuantidadeDeItensPorPagina = resultadoPaginado.QuantidadeDeItensPorPagina,
+            QuantidadeDePaginas = resultadoPaginado.QuantidadeDePaginas,
+            PaginaAtual = resultadoPaginado.PaginaAtual,
+            Itens = Mapper.Map<List<EmprestimoDto>>(resultadoPaginado.Itens)
+        };
     }
 
     public async Task<List<EmprestimoDto>> ObterTodos()
     {
         var obterEmprestimos = await _emprestimoRepository.ObterTodos();
-        return Mapper.Map<List<EmprestimoDto>>(obterEmprestimos);
-    }
-
-    public async Task<List<EmprestimoDto>?> ObterHistoricoDeEmprestimoDeUmUsuario(int usuarioId)
-    {
-        var usuario = await _usuarioRepository.ObterPorId(usuarioId);
-        if (usuario == null)
-        {
-            Notificator.Handle("Usuário não encontrado.");
-            return null;
-        }
-
-        var obterEmprestimos = await _emprestimoRepository.ObterHistoricoDeEmprestimoDeUmUsuario(usuarioId);
-        return Mapper.Map<List<EmprestimoDto>>(obterEmprestimos);
-    }
-
-    public async Task<List<EmprestimoDto>?> ObterHistoricoDeEmprestimoDeUmUsuario(string usuarioMatricula)
-    {
-        var usuario = await _usuarioRepository.FirstOrDefault(u => u.Matricula == usuarioMatricula);
-        if (usuario == null)
-        {
-            Notificator.Handle("Usuário não encontrado.");
-            return null;
-        }
-
-        var obterEmprestimos = await _emprestimoRepository.ObterHistoricoDeEmprestimoDeUmUsuario(usuarioMatricula);
-        return Mapper.Map<List<EmprestimoDto>>(obterEmprestimos);
-    }
-
-    public async Task<List<EmprestimoDto>?> ObterHistoricoDeEmprestimoDeUmLivro(int livroId)
-    {
-        var livro = await _livroRepository.ObterPorId(livroId);
-        if (livro == null)
-        {
-            Notificator.Handle("Livro não encontrado.");
-            return null;
-        }
-
-        var obterEmprestimos = await _emprestimoRepository.ObterHistoricoDeEmprestimoDeUmLivro(livroId);
         return Mapper.Map<List<EmprestimoDto>>(obterEmprestimos);
     }
 

@@ -26,7 +26,7 @@ public class LivroController : BaseController
     }
 
     [HttpPost]
-    [SwaggerOperation(Summary = "Adicionar um livro.", Tags = new[] { "Administração - Livros" })]
+    [SwaggerOperation(Tags = new[] { "Administração - Livros" })]
     [ProducesResponseType(typeof(LivroDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -37,7 +37,7 @@ public class LivroController : BaseController
     }
 
     [HttpPut("{id}")]
-    [SwaggerOperation(Summary = "Atualizar um livro.", Tags = new[] { "Administração - Livros" })]
+    [SwaggerOperation(Tags = new[] { "Administração - Livros" })]
     [ProducesResponseType(typeof(LivroDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -49,7 +49,7 @@ public class LivroController : BaseController
     }
 
     [HttpPut("Upload-Capa/{id}")]
-    [SwaggerOperation(Summary = "Adicionar/atualizar a capa de um livro.", Tags = new[] { "Administração - Livros" })]
+    [SwaggerOperation(Tags = new[] { "Administração - Livros" })]
     [ProducesResponseType(typeof(LivroDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -60,7 +60,7 @@ public class LivroController : BaseController
     }
 
     [HttpDelete("{id}")]
-    [SwaggerOperation(Summary = "Deletar um livro.", Tags = new[] { "Administração - Livros" })]
+    [SwaggerOperation(Tags = new[] { "Administração - Livros" })]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -72,7 +72,7 @@ public class LivroController : BaseController
     }
 
     [HttpGet("Download-Capa/{id}")]
-    [SwaggerOperation(Summary = "Baixar a capa de um livro.", Tags = new[] { "Administração - Livros" })]
+    [SwaggerOperation(Tags = new[] { "Administração - Livros" })]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -97,7 +97,7 @@ public class LivroController : BaseController
     }
 
     [HttpGet("Pesquisar")]
-    [SwaggerOperation(Summary = "Pesquisar livros.", Tags = new[] { "Administração - Livros" })]
+    [SwaggerOperation(Tags = new[] { "Administração - Livros" })]
     [ProducesResponseType(typeof(PaginacaoDto<LivroDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Pesquisar([FromQuery] PesquisarLivroDto dto)
@@ -107,7 +107,7 @@ public class LivroController : BaseController
     }
 
     [HttpGet("Obter-Todos")]
-    [SwaggerOperation(Summary = "Obter todos os livros.", Tags = new[] { "Administração - Livros" })]
+    [SwaggerOperation(Tags = new[] { "Administração - Livros" })]
     [ProducesResponseType(typeof(LivroDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> ObterTodos()

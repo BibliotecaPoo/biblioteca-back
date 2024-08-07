@@ -44,7 +44,7 @@ public class LivroService : BaseService, ILivroService
         if (!await ValidacoesParaAtualizarLivro(id, dto))
             return null;
 
-        var atualizarLivro = await _livroRepository.ObterPorId(id);
+        var atualizarLivro = await _livroRepository.FirstOrDefault(l => l.Id == id);
         MappingParaAtualizarLivro(atualizarLivro!, dto);
 
         _livroRepository.Atualizar(atualizarLivro!);
@@ -53,7 +53,7 @@ public class LivroService : BaseService, ILivroService
 
     public async Task<LivroDto?> UploadCapa(int id, ICollection<IFormFile>? files)
     {
-        var livro = await _livroRepository.ObterPorId(id);
+        var livro = await _livroRepository.FirstOrDefault(l => l.Id == id);
         if (livro == null)
         {
             Notificator.HandleNotFoundResource();
@@ -98,7 +98,7 @@ public class LivroService : BaseService, ILivroService
 
     public async Task Deletar(int id)
     {
-        var obterLivro = await _livroRepository.ObterPorId(id);
+        var obterLivro = await _livroRepository.FirstOrDefault(l => l.Id == id);
         if (obterLivro == null)
         {
             Notificator.HandleNotFoundResource();
@@ -133,7 +133,7 @@ public class LivroService : BaseService, ILivroService
 
     public async Task<LivroDto?> ObterPorId(int id)
     {
-        var obterLivro = await _livroRepository.ObterPorId(id);
+        var obterLivro = await _livroRepository.FirstOrDefault(l => l.Id == id);
         if (obterLivro != null)
             return Mapper.Map<LivroDto>(obterLivro);
 
@@ -181,7 +181,7 @@ public class LivroService : BaseService, ILivroService
             return false;
         }
 
-        var livroExistente = await _livroRepository.ObterPorId(id);
+        var livroExistente = await _livroRepository.FirstOrDefault(l => l.Id == id);
         if (livroExistente == null)
         {
             Notificator.HandleNotFoundResource();

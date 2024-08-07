@@ -40,7 +40,7 @@ public class UsuarioService : BaseService, IUsuarioService
         if (!await ValidacoesParaAtualizarUsuario(id, dto))
             return null;
 
-        var atualizarUsuario = await _usuarioRepository.ObterPorId(id);
+        var atualizarUsuario = await _usuarioRepository.FirstOrDefault(u => u.Id == id);
         MappingParaAtualizarUsuario(atualizarUsuario!, dto);
 
         _usuarioRepository.Atualizar(atualizarUsuario!);
@@ -49,7 +49,7 @@ public class UsuarioService : BaseService, IUsuarioService
 
     public async Task Deletar(int id)
     {
-        var obterUsuario = await _usuarioRepository.ObterPorId(id);
+        var obterUsuario = await _usuarioRepository.FirstOrDefault(u => u.Id == id);
         if (obterUsuario == null)
         {
             Notificator.HandleNotFoundResource();
@@ -124,7 +124,7 @@ public class UsuarioService : BaseService, IUsuarioService
             return false;
         }
 
-        var usuarioExistente = await _usuarioRepository.ObterPorId(id);
+        var usuarioExistente = await _usuarioRepository.FirstOrDefault(u => u.Id == id);
         if (usuarioExistente == null)
         {
             Notificator.HandleNotFoundResource();

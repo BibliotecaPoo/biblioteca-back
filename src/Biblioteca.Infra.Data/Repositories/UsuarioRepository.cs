@@ -49,7 +49,8 @@ public class UsuarioRepository : Repository<Usuario>, IUsuarioRepository
             TotalDeItens = await consulta.CountAsync(),
             QuantidadeDeItensPorPagina = quantidadeDeItensPorPagina,
             PaginaAtual = paginaAtual,
-            Itens = await consulta.Skip((paginaAtual - 1) * quantidadeDeItensPorPagina).Take(quantidadeDeItensPorPagina).ToListAsync()
+            Itens = await consulta.Skip((paginaAtual - 1) * quantidadeDeItensPorPagina).Take(quantidadeDeItensPorPagina)
+                .ToListAsync()
         };
 
         var quantidadeDePaginas = (double)resultadoPaginado.TotalDeItens / quantidadeDeItensPorPagina;
@@ -57,9 +58,6 @@ public class UsuarioRepository : Repository<Usuario>, IUsuarioRepository
 
         return resultadoPaginado;
     }
-
-    public async Task<Usuario?> ObterPorId(int id)
-        => await Context.Usuarios.AsNoTrackingWithIdentityResolution().FirstOrDefaultAsync(u => u.Id == id);
 
     public async Task<List<Usuario>> ObterTodos()
         => await Context.Usuarios.AsNoTrackingWithIdentityResolution().ToListAsync();
