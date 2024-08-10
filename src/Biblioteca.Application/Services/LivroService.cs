@@ -9,6 +9,7 @@ using Biblioteca.Domain.Entities;
 using Biblioteca.Domain.Enums;
 using Biblioteca.Domain.Validators.Livro;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 namespace Biblioteca.Application.Services;
@@ -31,8 +32,8 @@ public class LivroService : BaseService, ILivroService
             return null;
 
         var adicionarLivro = Mapper.Map<Livro>(dto);
-        adicionarLivro.QuantidadeExemplaresDisponiveisParaEmprestimo =
-            adicionarLivro.QuantidadeExemplaresDisponiveisEmEstoque;
+        adicionarLivro.Codigo = await GerarCodigo();
+        adicionarLivro.QuantidadeExemplaresDisponiveisParaEmprestimo = adicionarLivro.QuantidadeExemplaresDisponiveisEmEstoque;
         adicionarLivro.StatusLivro = EStatusLivro.Disponivel;
 
         _livroRepository.Adicionar(adicionarLivro);
@@ -241,6 +242,16 @@ public class LivroService : BaseService, ILivroService
         var extensao = Path.GetExtension(file.FileName).ToLowerInvariant();
 
         return extensoesPermitidas.Contains(extensao);
+    }
+    
+    private async Task<int> GerarCodigo()
+    {
+        var ultimoCodigo = await _livroRepository.Queryable()
+            .OrderByDescending(l => l.Codigo)
+            .Select(l => l.Codigo)
+            .FirstOrDefaultAsync();
+
+        return ultimoCodigo == 0 ? 1000 : ultimoCodigo + 1;
     }
 
     private async Task<bool> CommitChanges()

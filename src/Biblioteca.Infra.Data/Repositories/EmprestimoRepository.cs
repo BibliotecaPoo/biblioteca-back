@@ -57,5 +57,5 @@ public class EmprestimoRepository : Repository<Emprestimo>, IEmprestimoRepositor
     }
 
     public async Task<List<Emprestimo>> ObterTodos()
-        => await Context.Emprestimos.AsNoTrackingWithIdentityResolution().ToListAsync();
+        => await Context.Emprestimos.AsNoTracking().ToListAsync();
 }

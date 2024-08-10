@@ -13,11 +13,8 @@ public class LivroRepository : Repository<Livro>, ILivroRepository
     {
     }
 
-    public async void Adicionar(Livro livro)
-    {
-        livro.Codigo = await GerarCodigoParaOLivro();
-        Context.Livros.Add(livro);
-    }
+    public void Adicionar(Livro livro)
+        => Context.Livros.Add(livro);
 
     public void Atualizar(Livro livro)
         => Context.Livros.Update(livro);
@@ -66,15 +63,8 @@ public class LivroRepository : Repository<Livro>, ILivroRepository
     }
 
     public async Task<List<Livro>> ObterTodos()
-        => await Context.Livros.AsNoTrackingWithIdentityResolution().ToListAsync();
+        => await Context.Livros.AsNoTracking().ToListAsync();
 
-    private async Task<int> GerarCodigoParaOLivro()
-    {
-        var ultimoCodigo = await Context.Livros
-            .OrderByDescending(l => l.Codigo)
-            .Select(l => l.Codigo)
-            .FirstOrDefaultAsync();
-
-        return ultimoCodigo == 0 ? 1000 : ultimoCodigo + 1;
-    }
+    public IQueryable<Livro> Queryable()
+        => Context.Livros.AsNoTracking();
 }

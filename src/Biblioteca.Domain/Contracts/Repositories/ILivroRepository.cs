@@ -10,4 +10,5 @@ public interface ILivroRepository : IRepository<Livro>
     Task<IPaginacao<Livro>> Pesquisar(int? id, string? titulo, string? autor, string? editora, string? categoria,
         int? codigo, int quantidadeDeItensPorPagina = 10, int paginaAtual = 1);
     Task<List<Livro>> ObterTodos();
+    IQueryable<Livro> Queryable();
 }

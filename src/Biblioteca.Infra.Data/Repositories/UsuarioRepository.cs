@@ -60,5 +60,5 @@ public class UsuarioRepository : Repository<Usuario>, IUsuarioRepository
     }
 
     public async Task<List<Usuario>> ObterTodos()
-        => await Context.Usuarios.AsNoTrackingWithIdentityResolution().ToListAsync();
+        => await Context.Usuarios.AsNoTracking().ToListAsync();
 }

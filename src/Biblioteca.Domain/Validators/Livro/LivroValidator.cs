@@ -21,8 +21,6 @@ public class LivroValidator : AbstractValidator<Entities.Livro>
         RuleFor(l => l.Edicao)
             .NotNull()
             .WithMessage("A edição não pode ser nula.")
-            .Matches(@"^[1-9][0-9]*[aª] edicao$")
-            .WithMessage("A edição deve seguir um dos padrões: 1a edicao ou 1ª edicao, 2a edicao ou 2ª edicao...")
             .Length(3, 30)
             .WithMessage("A edição deve conter entre {MinLength} e {MaxLength} caracteres.");
 
