@@ -9,6 +9,7 @@ public class Livro : Entity
     public string Edicao { get; set; } = null!;
     public string Editora { get; set; } = null!;
     public string Categoria { get; set; } = null!;
+    public int Codigo { get; set; }
     public int AnoPublicacao { get; set; }
     public int QuantidadeExemplaresDisponiveisEmEstoque { get; set; }
     public int? QuantidadeExemplaresDisponiveisParaEmprestimo { get; set; }

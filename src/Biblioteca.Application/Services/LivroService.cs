@@ -119,7 +119,7 @@ public class LivroService : BaseService, ILivroService
     public async Task<PaginacaoDto<LivroDto>> Pesquisar(PesquisarLivroDto dto)
     {
         var resultadoPaginado = await _livroRepository.Pesquisar(dto.Id, dto.Titulo, dto.Autor,
-            dto.Editora, dto.Categoria, dto.QuantidadeDeItensPorPagina, dto.PaginaAtual);
+            dto.Editora, dto.Categoria, dto.Codigo, dto.QuantidadeDeItensPorPagina, dto.PaginaAtual);
 
         return new PaginacaoDto<LivroDto>
         {

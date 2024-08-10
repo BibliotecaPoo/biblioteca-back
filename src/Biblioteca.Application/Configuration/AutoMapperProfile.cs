@@ -1,4 +1,8 @@
 ﻿using AutoMapper;
+using Biblioteca.Application.DTOs.Auth;
+using Biblioteca.Application.DTOs.Emprestimo;
+using Biblioteca.Application.DTOs.Livro;
+using Biblioteca.Application.DTOs.Usuario;
 using Biblioteca.Domain.Entities;
 
 namespace Biblioteca.Application.Configuration;
@@ -9,30 +13,33 @@ public class AutoMapperProfile : Profile
     {
         #region Auth
 
-        CreateMap<DTOs.Auth.LoginDto, Administrador>().ReverseMap();
+        CreateMap<LoginDto, Administrador>();
 
         #endregion
 
         #region Usuario
 
-        CreateMap<DTOs.Usuario.UsuarioDto, Usuario>().ReverseMap();
-        CreateMap<DTOs.Usuario.AdicionarUsuarioDto, Usuario>().ReverseMap();
-        CreateMap<DTOs.Usuario.AtualizarUsuarioDto, Usuario>().ReverseMap();
+        CreateMap<Usuario, UsuarioDto>();
+        CreateMap<AdicionarUsuarioDto, Usuario>();
+        CreateMap<AtualizarUsuarioDto, Usuario>();
 
         #endregion
 
         #region Livro
 
-        CreateMap<DTOs.Livro.LivroDto, Livro>().ReverseMap();
-        CreateMap<DTOs.Livro.AdicionarLivroDto, Livro>().ReverseMap();
-        CreateMap<DTOs.Livro.AtualizarLivroDto, Livro>().ReverseMap();
+        CreateMap<Livro, LivroDto>()
+            .ForMember(dest => dest.StatusLivro, opt => opt.MapFrom(src => src.StatusLivro.ToString()));
+        CreateMap<AdicionarLivroDto, Livro>();
+        CreateMap<AtualizarLivroDto, Livro>();
 
         #endregion
 
         #region Emprestimo
 
-        CreateMap<DTOs.Emprestimo.EmprestimoDto, Emprestimo>().ReverseMap();
-        CreateMap<DTOs.Emprestimo.RealizarEmprestimoDto, Emprestimo>().ReverseMap();
+        CreateMap<Emprestimo, EmprestimoDto>()
+            .ForMember(dest => dest.StatusEmprestimo, opt => opt.MapFrom(src => src.StatusEmprestimo.ToString()))
+            .ForMember(dest => dest.Usuario, opt => opt.MapFrom(src => src.Usuario))
+            .ForMember(dest => dest.Livro, opt => opt.MapFrom(src => src.Livro));
 
         #endregion
     }

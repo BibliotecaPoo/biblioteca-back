@@ -7,7 +7,7 @@ public interface IEmprestimoService
 {
     Task<EmprestimoDto?> RealizarEmprestimo(RealizarEmprestimoDto dto);
     Task<EmprestimoDto?> RealizarRenovacao(int id, RealizarRenovacaoDto dto);
-    Task<EmprestimoDto?> RealizarEntrega(int id);
+    Task<EmprestimoDto?> RealizarEntrega(int id, RealizarEntregaDto dto);
     Task<PaginacaoDto<EmprestimoDto>> Pesquisar(PesquisarEmprestimoDto dto);
     Task<List<EmprestimoDto>> ObterTodos();
 }

@@ -49,9 +49,9 @@ public class EmprestimoController : BaseController
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> RealizarEntrega(int id)
+    public async Task<IActionResult> RealizarEntrega(int id, [FromBody] RealizarEntregaDto dto)
     {
-        var realizarEntrega = await _emprestimoService.RealizarEntrega(id);
+        var realizarEntrega = await _emprestimoService.RealizarEntrega(id, dto);
         return OkResponse(realizarEntrega);
     }
 

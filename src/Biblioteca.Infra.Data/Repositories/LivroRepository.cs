@@ -13,8 +13,11 @@ public class LivroRepository : Repository<Livro>, ILivroRepository
     {
     }
 
-    public void Adicionar(Livro livro)
-        => Context.Livros.Add(livro);
+    public async void Adicionar(Livro livro)
+    {
+        livro.Codigo = await GerarCodigoParaOLivro();
+        Context.Livros.Add(livro);
+    }
 
     public void Atualizar(Livro livro)
         => Context.Livros.Update(livro);
@@ -23,7 +26,7 @@ public class LivroRepository : Repository<Livro>, ILivroRepository
         => Context.Livros.Remove(livro);
 
     public async Task<IPaginacao<Livro>> Pesquisar(int? id, string? titulo, string? autor, string? editora,
-        string? categoria, int quantidadeDeItensPorPagina = 10, int paginaAtual = 1)
+        string? categoria, int? codigo, int quantidadeDeItensPorPagina = 10, int paginaAtual = 1)
     {
         var consulta = Context.Livros
             .AsNoTracking()
@@ -44,6 +47,9 @@ public class LivroRepository : Repository<Livro>, ILivroRepository
         if (!string.IsNullOrEmpty(categoria))
             consulta = consulta.Where(l => l.Categoria.Contains(categoria));
 
+        if (codigo.HasValue)
+            consulta = consulta.Where(l => l.Codigo == codigo);
+
         var resultadoPaginado = new Paginacao<Livro>
         {
             TotalDeItens = await consulta.CountAsync(),
@@ -61,4 +67,14 @@ public class LivroRepository : Repository<Livro>, ILivroRepository
 
     public async Task<List<Livro>> ObterTodos()
         => await Context.Livros.AsNoTrackingWithIdentityResolution().ToListAsync();
+
+    private async Task<int> GerarCodigoParaOLivro()
+    {
+        var ultimoCodigo = await Context.Livros
+            .OrderByDescending(l => l.Codigo)
+            .Select(l => l.Codigo)
+            .FirstOrDefaultAsync();
+
+        return ultimoCodigo == 0 ? 1000 : ultimoCodigo + 1;
+    }
 }

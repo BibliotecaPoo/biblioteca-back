@@ -19,8 +19,8 @@ public class EmprestimoRepository : Repository<Emprestimo>, IEmprestimoRepositor
     public void Atualizar(Emprestimo emprestimo)
         => Context.Emprestimos.Update(emprestimo);
 
-    public async Task<IPaginacao<Emprestimo>> Pesquisar(int? id, int? usuarioId, int? livroId,
-        int quantidadeDeItensPorPagina = 10, int paginaAtual = 1)
+    public async Task<IPaginacao<Emprestimo>> Pesquisar(int? id, int? usuarioId, string? usuarioMatricula, int? livroId,
+        int? livroCodigo, int quantidadeDeItensPorPagina = 10, int paginaAtual = 1)
     {
         var consulta = Context.Emprestimos
             .AsNoTracking()
@@ -32,8 +32,14 @@ public class EmprestimoRepository : Repository<Emprestimo>, IEmprestimoRepositor
         if (usuarioId.HasValue)
             consulta = consulta.Where(e => e.UsuarioId == usuarioId);
 
+        if (!string.IsNullOrEmpty(usuarioMatricula))
+            consulta = consulta.Where(e => e.Usuario.Matricula.Contains(usuarioMatricula));
+
         if (livroId.HasValue)
             consulta = consulta.Where(e => e.LivroId == livroId);
+
+        if (livroCodigo.HasValue)
+            consulta = consulta.Where(e => e.Livro.Codigo == livroCodigo);
 
         var resultadoPaginado = new Paginacao<Emprestimo>
         {
