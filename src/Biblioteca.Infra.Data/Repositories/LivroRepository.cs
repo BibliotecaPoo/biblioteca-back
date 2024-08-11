@@ -19,9 +19,6 @@ public class LivroRepository : Repository<Livro>, ILivroRepository
     public void Atualizar(Livro livro)
         => Context.Livros.Update(livro);
 
-    public void Deletar(Livro livro)
-        => Context.Livros.Remove(livro);
-
     public async Task<IPaginacao<Livro>> Pesquisar(int? id, string? titulo, string? autor, string? editora,
         string? categoria, int? codigo, int quantidadeDeItensPorPagina = 10, int paginaAtual = 1)
     {

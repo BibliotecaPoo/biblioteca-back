@@ -7,7 +7,6 @@ public interface IUsuarioService
 {
     Task<UsuarioDto?> Adicionar(AdicionarUsuarioDto dto);
     Task<UsuarioDto?> Atualizar(int id, AtualizarUsuarioDto dto);
-    Task Deletar(int id);
     Task<PaginacaoDto<UsuarioDto>> Pesquisar(PesquisarUsuarioDto dto);
     Task<List<UsuarioDto>> ObterTodos();
 }

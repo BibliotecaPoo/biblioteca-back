@@ -97,26 +97,6 @@ public class LivroService : BaseService, ILivroService
         return await CommitChanges() ? Mapper.Map<LivroDto>(livro) : null;
     }
 
-    public async Task Deletar(int id)
-    {
-        var obterLivro = await _livroRepository.FirstOrDefault(l => l.Id == id);
-        if (obterLivro == null)
-        {
-            Notificator.HandleNotFoundResource();
-            return;
-        }
-
-        if (obterLivro.QuantidadeExemplaresDisponiveisParaEmprestimo <
-            obterLivro.QuantidadeExemplaresDisponiveisEmEstoque)
-        {
-            Notificator.Handle("Não é possível deletar o livro, pois o mesmo possui exemplares emnprestados.");
-            return;
-        }
-
-        _livroRepository.Deletar(obterLivro);
-        await CommitChanges();
-    }
-
     public async Task<PaginacaoDto<LivroDto>> Pesquisar(PesquisarLivroDto dto)
     {
         var resultadoPaginado = await _livroRepository.Pesquisar(dto.Id, dto.Titulo, dto.Autor,

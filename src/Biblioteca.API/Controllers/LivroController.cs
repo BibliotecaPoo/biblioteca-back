@@ -59,18 +59,6 @@ public class LivroController : BaseController
         return CreatedResponse("", adicionarCapa);
     }
 
-    [HttpDelete("{id}")]
-    [SwaggerOperation(Tags = new[] { "Administração - Livros" })]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Deletar(int id)
-    {
-        await _livroService.Deletar(id);
-        return NoContentResponse();
-    }
-
     [HttpGet("Download-Capa/{id}")]
     [SwaggerOperation(Tags = new[] { "Administração - Livros" })]
     [ProducesResponseType(StatusCodes.Status200OK)]

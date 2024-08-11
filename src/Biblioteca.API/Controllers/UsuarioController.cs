@@ -43,18 +43,6 @@ public class UsuarioController : BaseController
         return OkResponse(atualizarUsuario);
     }
 
-    [HttpDelete("{id}")]
-    [SwaggerOperation(Tags = new[] { "Administração - Usuários" })]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Deletar(int id)
-    {
-        await _usuarioService.Deletar(id);
-        return NoContentResponse();
-    }
-
     [HttpGet("Pesquisar")]
     [SwaggerOperation(Tags = new[] { "Administração - Usuários" })]
     [ProducesResponseType(typeof(PaginacaoDto<UsuarioDto>), StatusCodes.Status200OK)]

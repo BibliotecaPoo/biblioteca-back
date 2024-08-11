@@ -19,9 +19,6 @@ public class UsuarioRepository : Repository<Usuario>, IUsuarioRepository
     public void Atualizar(Usuario usuario)
         => Context.Usuarios.Update(usuario);
 
-    public void Deletar(Usuario usuario)
-        => Context.Usuarios.Remove(usuario);
-
     public async Task<IPaginacao<Usuario>> Pesquisar(int? id, string? nome, string? email, string? matricula,
         string? curso, int quantidadeDeItensPorPagina = 10, int paginaAtual = 1)
     {

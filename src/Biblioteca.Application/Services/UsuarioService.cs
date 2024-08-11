@@ -47,25 +47,6 @@ public class UsuarioService : BaseService, IUsuarioService
         return await CommitChanges() ? Mapper.Map<UsuarioDto>(atualizarUsuario) : null;
     }
 
-    public async Task Deletar(int id)
-    {
-        var obterUsuario = await _usuarioRepository.FirstOrDefault(u => u.Id == id);
-        if (obterUsuario == null)
-        {
-            Notificator.HandleNotFoundResource();
-            return;
-        }
-
-        if (obterUsuario.QuantidadeEmprestimosRealizados > 0)
-        {
-            Notificator.Handle("O usuário possui livros emprestados, não é possível deletá-lo.");
-            return;
-        }
-
-        _usuarioRepository.Deletar(obterUsuario);
-        await CommitChanges();
-    }
-
     public async Task<PaginacaoDto<UsuarioDto>> Pesquisar(PesquisarUsuarioDto dto)
     {
         var resultadoPaginado = await _usuarioRepository.Pesquisar(dto.Id, dto.Nome, dto.Email, dto.Matricula,
