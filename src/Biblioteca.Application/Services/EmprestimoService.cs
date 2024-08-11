@@ -41,6 +41,9 @@ public class EmprestimoService : BaseService, IEmprestimoService
             Notificator.Handle("Senha incorreta.");
             return null;
         }
+        
+        usuario.QuantidadeEmprestimosRealizados += 1;
+        _usuarioRepository.Atualizar(usuario);
 
         livro!.QuantidadeExemplaresDisponiveisParaEmprestimo -= 1;
         if (livro.QuantidadeExemplaresDisponiveisParaEmprestimo == 0)
@@ -48,9 +51,6 @@ public class EmprestimoService : BaseService, IEmprestimoService
             livro.StatusLivro = EStatusLivro.Indisponivel;
         }
         _livroRepository.Atualizar(livro);
-
-        usuario.QuantidadeEmprestimosRealizados += 1;
-        _usuarioRepository.Atualizar(usuario);
 
         var emprestimo = new Emprestimo();
         emprestimo.DataEmprestimo = DateTime.Today;
@@ -69,17 +69,17 @@ public class EmprestimoService : BaseService, IEmprestimoService
         if (!await ValidacoesParaRealizarRenovacao(id, dto))
             return null;
 
-        var emprestimo = await _emprestimoRepository.FirstOrDefault(e => e.Id == id);
-        var usuario = await _usuarioRepository.FirstOrDefault(u => u.Matricula == dto.UsuarioMatricula);
+        var emprestimo = await _emprestimoRepository.ObterPorId(id);
+        var usuario = emprestimo!.Usuario;
 
-        var resultadoVerificacaoSenha = _passwordHasher.VerifyHashedPassword(usuario!, usuario!.Senha, dto.UsuarioSenha);
+        var resultadoVerificacaoSenha = _passwordHasher.VerifyHashedPassword(usuario, usuario.Senha, dto.UsuarioSenha);
         if (resultadoVerificacaoSenha == PasswordVerificationResult.Failed)
         {
             Notificator.Handle("Senha incorreta.");
             return null;
         }
 
-        emprestimo!.DataEmprestimo = DateTime.Today;
+        emprestimo.DataEmprestimo = DateTime.Today;
         emprestimo.DataDevolucaoPrevista = DateTime.Today.AddDays(10);
         emprestimo.StatusEmprestimo = EStatusEmprestimo.Renovado;
         emprestimo.QuantidadeRenovacoesRealizadas += 1;
@@ -90,41 +90,26 @@ public class EmprestimoService : BaseService, IEmprestimoService
 
     public async Task<EmprestimoDto?> RealizarEntrega(int id, RealizarEntregaDto dto)
     {
-        if (id != dto.Id)
-        {
-            Notificator.Handle("O id informado na url deve ser igual ao id informado no json.");
+        if (!await ValidacoesParaRealizarEntrega(id, dto))
             return null;
-        }
 
-        var emprestimo = await _emprestimoRepository.FirstOrDefault(e => e.Id == id);
-        if (emprestimo == null)
-        {
-            Notificator.HandleNotFoundResource();
-            return null;
-        }
+        var emprestimo = await _emprestimoRepository.ObterPorId(id);
+        var usuario = emprestimo!.Usuario;
+        var livro = emprestimo.Livro;
 
-        if (emprestimo.StatusEmprestimo is EStatusEmprestimo.Entregue or EStatusEmprestimo.EntregueComAtraso)
-        {
-            Notificator.Handle("O empréstimo já está como entregue.");
-            return null;
-        }
+        usuario.QuantidadeEmprestimosRealizados -= 1;
+        _usuarioRepository.Atualizar(usuario);
 
-        var livro = await _livroRepository.FirstOrDefault(l => l.Codigo == dto.LivroCodigo);
-        if (livro!.StatusLivro == EStatusLivro.Indisponivel)
+        if (livro.StatusLivro == EStatusLivro.Indisponivel)
         {
             livro.StatusLivro = EStatusLivro.Disponivel;
         }
         livro.QuantidadeExemplaresDisponiveisParaEmprestimo += 1;
         _livroRepository.Atualizar(livro);
 
-        var usuario = await _usuarioRepository.FirstOrDefault(u => u.Matricula == dto.UsuarioMatricula);
-        usuario!.QuantidadeEmprestimosRealizados -= 1;
-        _usuarioRepository.Atualizar(usuario);
-
         emprestimo.DataDevolucaoRealizada = DateTime.Today;
-        emprestimo.StatusEmprestimo = emprestimo.DataDevolucaoRealizada > emprestimo.DataDevolucaoPrevista
-            ? EStatusEmprestimo.EntregueComAtraso
-            : EStatusEmprestimo.Entregue;
+        emprestimo.StatusEmprestimo = emprestimo.DataDevolucaoRealizada > emprestimo.DataDevolucaoPrevista ? 
+            EStatusEmprestimo.EntregueComAtraso : EStatusEmprestimo.Entregue;
         _emprestimoRepository.Atualizar(emprestimo);
 
         if (usuario.Bloqueado == true)
@@ -132,8 +117,7 @@ public class EmprestimoService : BaseService, IEmprestimoService
             var emprestimoAtrasado = await _emprestimoRepository.FirstOrDefault(e =>
                 e.UsuarioId == usuario.Id &&
                 DateTime.Today > e.DataDevolucaoPrevista &&
-                (e.StatusEmprestimo == EStatusEmprestimo.Emprestado ||
-                 e.StatusEmprestimo == EStatusEmprestimo.Renovado));
+                (e.StatusEmprestimo == EStatusEmprestimo.Emprestado || e.StatusEmprestimo == EStatusEmprestimo.Renovado));
             if (emprestimoAtrasado == null)
             {
                 usuario.Bloqueado = false;
@@ -173,6 +157,25 @@ public class EmprestimoService : BaseService, IEmprestimoService
             Notificator.Handle("Usuário não encontrado com a matrícula informada.");
             return false;
         }
+        
+        var livro = await _livroRepository.FirstOrDefault(l => l.Codigo == dto.LivroCodigo);
+        if (livro == null)
+        {
+            Notificator.Handle("Livro não encontrado com o código informado.");
+            return false;
+        }
+        
+        if (usuario.QuantidadeEmprestimosRealizados == usuario.QuantidadeEmprestimosPermitida)
+        {
+            Notificator.Handle("O usuário já atingiu o limite de empréstimos.");
+            return false;
+        }
+
+        if (livro.StatusLivro == EStatusLivro.Indisponivel)
+        {
+            Notificator.Handle("Não existe exemplar disponível no momento para esse livro.");
+            return false;
+        }
 
         if (usuario.Bloqueado == true)
         {
@@ -195,13 +198,6 @@ public class EmprestimoService : BaseService, IEmprestimoService
             return false;
         }
 
-        var livro = await _livroRepository.FirstOrDefault(l => l.Codigo == dto.LivroCodigo);
-        if (livro == null)
-        {
-            Notificator.Handle("Livro não encontrado com o código informado.");
-            return false;
-        }
-
         var emprestimoIgual = await _emprestimoRepository.FirstOrDefault(e =>
             e.LivroId == livro.Id &&
             e.UsuarioId == usuario.Id &&
@@ -209,18 +205,6 @@ public class EmprestimoService : BaseService, IEmprestimoService
         if (emprestimoIgual != null)
         {
             Notificator.Handle("No momento o usuário já possui um exemplar emprestado ou renovado desse mesmo livro.");
-            return false;
-        }
-
-        if (usuario.QuantidadeEmprestimosRealizados == usuario.QuantidadeEmprestimosPermitida)
-        {
-            Notificator.Handle("O usuário já atingiu o limite de empréstimos.");
-            return false;
-        }
-
-        if (livro.StatusLivro == EStatusLivro.Indisponivel)
-        {
-            Notificator.Handle("Não existe exemplar disponível no momento para esse livro.");
             return false;
         }
 
@@ -235,28 +219,73 @@ public class EmprestimoService : BaseService, IEmprestimoService
             return false;
         }
 
-        var emprestimo = await _emprestimoRepository.FirstOrDefault(e => e.Id == id);
+        var emprestimo = await _emprestimoRepository.ObterPorId(id);
         if (emprestimo == null)
         {
             Notificator.HandleNotFoundResource();
             return false;
         }
+        
+        if (emprestimo.StatusEmprestimo is EStatusEmprestimo.Entregue or EStatusEmprestimo.EntregueComAtraso)
+        {
+            Notificator.Handle("O empréstimo já está como entregue. Não é possível renovar o livro.");
+            return false;
+        }
+        
+        if (emprestimo.QuantidadeRenovacoesRealizadas == emprestimo.QuantidadeRenovacoesPermitida)
+        {
+            Notificator.Handle("O usuário já atingiu o limite de renovações para esse livro.");
+            return false;
+        }
 
-        var usuario = await _usuarioRepository.FirstOrDefault(u => u.Matricula == dto.UsuarioMatricula);
-        if (usuario!.Bloqueado == true)
+        var usuarioRegistradoNoEmprestimo = await _usuarioRepository.FirstOrDefault(u =>
+            u.Matricula == emprestimo.Usuario.Matricula);
+        var usuarioInformadoNaDto = await _usuarioRepository.FirstOrDefault(u =>
+            u.Matricula == dto.UsuarioMatricula);
+
+        if (usuarioInformadoNaDto == null)
+        {
+            Notificator.Handle("Usuário não encontrado com a matrícula informada.");
+            return false;
+        }
+        
+        if (usuarioRegistradoNoEmprestimo!.Matricula != usuarioInformadoNaDto.Matricula)
+        {
+            Notificator.Handle("A matrícula informada não pertence ao usuário que foi registrado para esse empréstimo.");
+            return false;
+        }
+
+        var livroRegistradoNoEmprestimo = await _livroRepository.FirstOrDefault(l =>
+            l.Codigo == emprestimo.Livro.Codigo);
+        var livroInformadoNaDto = await _livroRepository.FirstOrDefault(l =>
+            l.Codigo == dto.LivroCodigo);
+
+        if (livroInformadoNaDto == null)
+        {
+            Notificator.Handle("Livro não encontrado com o código informado.");
+            return false;
+        }
+
+        if (livroRegistradoNoEmprestimo!.Codigo != livroInformadoNaDto.Codigo)
+        {
+            Notificator.Handle("O código do livro informado não pertence ao livro que foi registrado para esse empréstimo.");
+            return false;
+        }
+
+        if (usuarioInformadoNaDto.Bloqueado == true)
         {
             Notificator.Handle("O usuário está temporariamente impedido de realizar empréstimos ou renovações.");
             return false;
         }
 
         var emprestimoAtrasado = await _emprestimoRepository.FirstOrDefault(e =>
-            e.UsuarioId == usuario.Id &&
+            e.UsuarioId == usuarioInformadoNaDto.Id &&
             DateTime.Today > e.DataDevolucaoPrevista &&
             (e.StatusEmprestimo == EStatusEmprestimo.Emprestado || e.StatusEmprestimo == EStatusEmprestimo.Renovado));
         if (emprestimoAtrasado != null)
         {
-            usuario.Bloqueado = true;
-            _usuarioRepository.Atualizar(usuario);
+            usuarioInformadoNaDto.Bloqueado = true;
+            _usuarioRepository.Atualizar(usuarioInformadoNaDto);
 
             Notificator.Handle("O usuário possui livro(s) não devolvido(s) e atrasado(s). " +
                                "O usuário será impedido de fazer empréstimos/renovações até devolvê-lo(s).");
@@ -264,15 +293,61 @@ public class EmprestimoService : BaseService, IEmprestimoService
             return false;
         }
 
-        if (emprestimo.QuantidadeRenovacoesRealizadas == emprestimo.QuantidadeRenovacoesPermitida)
+        return true;
+    }
+
+    private async Task<bool> ValidacoesParaRealizarEntrega(int id, RealizarEntregaDto dto)
+    {
+        if (id != dto.Id)
         {
-            Notificator.Handle("O usuário já atingiu o limite de renovações para esse livro.");
+            Notificator.Handle("O id informado na url deve ser igual ao id informado no json.");
+            return false;
+        }
+
+        var emprestimo = await _emprestimoRepository.ObterPorId(id);
+        if (emprestimo == null)
+        {
+            Notificator.HandleNotFoundResource();
             return false;
         }
 
         if (emprestimo.StatusEmprestimo is EStatusEmprestimo.Entregue or EStatusEmprestimo.EntregueComAtraso)
         {
-            Notificator.Handle("O empréstimo já está como entregue. Não é possível renovar o livro.");
+            Notificator.Handle("O empréstimo já está como entregue.");
+            return false;
+        }
+        
+        var usuarioRegistradoNoEmprestimo = await _usuarioRepository.FirstOrDefault(u =>
+            u.Matricula == emprestimo.Usuario.Matricula);
+        var usuarioInformadoNaDto = await _usuarioRepository.FirstOrDefault(u => 
+            u.Matricula == dto.UsuarioMatricula);
+        
+        if (usuarioInformadoNaDto == null)
+        {
+            Notificator.Handle("Usuário não encontrado com a matrícula informada.");
+            return false;
+        }
+        
+        if (usuarioRegistradoNoEmprestimo!.Matricula != usuarioInformadoNaDto.Matricula)
+        {
+            Notificator.Handle("A matrícula informada não pertence ao usuário que foi registrado para esse empréstimo.");
+            return false;
+        }
+
+        var livroRegistradoNoEmprestimo = await _livroRepository.FirstOrDefault(l =>
+            l.Codigo == emprestimo.Livro.Codigo);
+        var livroInformadoNaDto = await _livroRepository.FirstOrDefault(l =>
+            l.Codigo == dto.LivroCodigo);
+        
+        if (livroInformadoNaDto == null)
+        {
+            Notificator.Handle("Livro não encontrado com o código informado.");
+            return false;
+        }
+        
+        if (livroRegistradoNoEmprestimo!.Codigo != livroInformadoNaDto.Codigo)
+        {
+            Notificator.Handle("O código do livro informado não pertence ao livro que foi registrado para esse empréstimo.");
             return false;
         }
 

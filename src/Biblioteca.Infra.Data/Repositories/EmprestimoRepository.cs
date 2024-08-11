@@ -19,11 +19,22 @@ public class EmprestimoRepository : Repository<Emprestimo>, IEmprestimoRepositor
     public void Atualizar(Emprestimo emprestimo)
         => Context.Emprestimos.Update(emprestimo);
 
+    public async Task<Emprestimo?> ObterPorId(int id)
+    {
+        return await Context.Emprestimos
+            .AsNoTracking()
+            .Include(e => e.Usuario)
+            .Include(e => e.Livro)
+            .FirstOrDefaultAsync(e => e.Id == id);
+    }
+
     public async Task<IPaginacao<Emprestimo>> Pesquisar(int? id, int? usuarioId, string? usuarioMatricula, int? livroId,
         int? livroCodigo, int quantidadeDeItensPorPagina = 10, int paginaAtual = 1)
     {
         var consulta = Context.Emprestimos
             .AsNoTracking()
+            .Include(e => e.Usuario)
+            .Include(e => e.Livro)
             .AsQueryable();
 
         if (id.HasValue)
@@ -57,5 +68,11 @@ public class EmprestimoRepository : Repository<Emprestimo>, IEmprestimoRepositor
     }
 
     public async Task<List<Emprestimo>> ObterTodos()
-        => await Context.Emprestimos.AsNoTracking().ToListAsync();
+    {
+        return await Context.Emprestimos
+            .AsNoTracking()
+            .Include(e => e.Usuario)
+            .Include(e => e.Livro)
+            .ToListAsync();
+    }
 }
