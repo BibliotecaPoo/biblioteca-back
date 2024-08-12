@@ -20,7 +20,7 @@ public class UsuarioRepository : Repository<Usuario>, IUsuarioRepository
         => Context.Usuarios.Update(usuario);
 
     public async Task<IPaginacao<Usuario>> Pesquisar(int? id, string? nome, string? email, string? matricula,
-        string? curso, int quantidadeDeItensPorPagina = 10, int paginaAtual = 1)
+        string? curso, bool? ativo, int quantidadeDeItensPorPagina = 10, int paginaAtual = 1)
     {
         var consulta = Context.Usuarios
             .AsNoTracking()
@@ -40,6 +40,9 @@ public class UsuarioRepository : Repository<Usuario>, IUsuarioRepository
 
         if (!string.IsNullOrEmpty(curso))
             consulta = consulta.Where(u => u.Curso.Contains(curso));
+
+        if (ativo.HasValue)
+            consulta = consulta.Where(u => u.Ativo == ativo);
 
         var resultadoPaginado = new Paginacao<Usuario>
         {

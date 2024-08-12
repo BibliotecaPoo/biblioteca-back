@@ -131,7 +131,8 @@ public class EmprestimoService : BaseService, IEmprestimoService
     public async Task<PaginacaoDto<EmprestimoDto>> Pesquisar(PesquisarEmprestimoDto dto)
     {
         var resultadoPaginado = await _emprestimoRepository.Pesquisar(dto.Id, dto.UsuarioId,
-            dto.UsuarioMatricula, dto.LivroId, dto.LivroCodigo, dto.QuantidadeDeItensPorPagina, dto.PaginaAtual);
+            dto.UsuarioMatricula, dto.LivroId, dto.LivroCodigo, dto.Ativo, dto.QuantidadeDeItensPorPagina,
+            dto.PaginaAtual);
 
         return new PaginacaoDto<EmprestimoDto>
         {
@@ -147,6 +148,55 @@ public class EmprestimoService : BaseService, IEmprestimoService
     {
         var obterEmprestimos = await _emprestimoRepository.ObterTodos();
         return Mapper.Map<List<EmprestimoDto>>(obterEmprestimos);
+    }
+
+    public async Task Ativar(int id)
+    {
+        var emprestimo = await _emprestimoRepository.FirstOrDefault(e => e.Id == id);
+        if (emprestimo == null)
+        {
+            Notificator.HandleNotFoundResource();
+            return;
+        }
+
+        if (emprestimo.Ativo)
+        {
+            Notificator.Handle("O empréstimo informado já está ativado.");
+            return;
+        }
+
+        emprestimo.Ativo = true;
+
+        _emprestimoRepository.Atualizar(emprestimo);
+        await CommitChanges();
+    }
+
+    public async Task Desativar(int id)
+    {
+        var emprestimo = await _emprestimoRepository.FirstOrDefault(e => e.Id == id);
+        if (emprestimo == null)
+        {
+            Notificator.HandleNotFoundResource();
+            return;
+        }
+
+        if (emprestimo.Ativo == false)
+        {
+            Notificator.Handle("O empréstimo informado já está desativado.");
+            return;
+        }
+
+        if (emprestimo.StatusEmprestimo != EStatusEmprestimo.Entregue &&
+            emprestimo.StatusEmprestimo != EStatusEmprestimo.EntregueComAtraso)
+        {
+            Notificator.Handle("O empréstimo não pode ser desativado, pois o mesmo ainda não foi entregue.");
+            return;
+        }
+
+        emprestimo.Ativo = false;
+
+        _emprestimoRepository.Atualizar(emprestimo);
+        await CommitChanges();
     }
 
     private async Task<bool> ValidacoesParaRealizarEmprestimo(RealizarEmprestimoDto dto)

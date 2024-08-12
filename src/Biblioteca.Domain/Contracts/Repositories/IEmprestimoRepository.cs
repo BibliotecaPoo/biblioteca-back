@@ -8,6 +8,6 @@ public interface IEmprestimoRepository : IRepository<Emprestimo>
     void Atualizar(Emprestimo emprestimo);
     Task<Emprestimo?> ObterPorId(int id);
     Task<IPaginacao<Emprestimo>> Pesquisar(int? id, int? usuarioId, string? usuarioMatricula, int? livroId,
-        int? livroCodigo, int quantidadeDeItensPorPagina = 10, int paginaAtual = 1);
+        int? livroCodigo, bool? ativo, int quantidadeDeItensPorPagina = 10, int paginaAtual = 1);
     Task<List<Emprestimo>> ObterTodos();
 }

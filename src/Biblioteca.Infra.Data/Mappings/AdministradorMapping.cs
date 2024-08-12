@@ -25,6 +25,11 @@ public class AdministradorMapping : IEntityTypeConfiguration<Administrador>
             .Property(a => a.Senha)
             .IsRequired()
             .HasColumnType("VARCHAR(255)");
+        
+        builder
+            .Property(a => a.Ativo)
+            .IsRequired()
+            .HasDefaultValue(true);
 
         builder
             .Property(a => a.CriadoEm)

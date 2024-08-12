@@ -10,4 +10,5 @@ public class UsuarioDto
     public int? QuantidadeEmprestimosPermitida { get; set; }
     public int? QuantidadeEmprestimosRealizados { get; set; }
     public bool Bloqueado { get; set; }
+    public bool Ativo { get; set; }
 }

@@ -12,6 +12,7 @@ public class EmprestimoDto
     public string StatusEmprestimo { get; set; } = null!;
     public int QuantidadeRenovacoesPermitida { get; set; }
     public int QuantidadeRenovacoesRealizadas { get; set; }
+    public bool Ativo { get; set; }
     public UsuarioDto Usuario { get; set; } = null!;
     public LivroDto Livro { get; set; } = null!;
 }

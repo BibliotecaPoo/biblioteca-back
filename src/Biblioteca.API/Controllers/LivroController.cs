@@ -103,4 +103,28 @@ public class LivroController : BaseController
         var obterLivros = await _livroService.ObterTodos();
         return OkResponse(obterLivros);
     }
+
+    [HttpPatch("ativar/{id}")]
+    [SwaggerOperation(Tags = new[] { "Administração - Livros" })]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Ativar(int id)
+    {
+        await _livroService.Ativar(id);
+        return NoContentResponse();
+    }
+
+    [HttpPatch("desativar/{id}")]
+    [SwaggerOperation(Tags = new[] { "Administração - Livros" })]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Desativar(int id)
+    {
+        await _livroService.Desativar(id);
+        return NoContentResponse();
+    }
 }

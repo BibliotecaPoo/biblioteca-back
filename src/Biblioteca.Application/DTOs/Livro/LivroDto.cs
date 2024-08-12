@@ -14,4 +14,5 @@ public class LivroDto
     public int QuantidadeExemplaresDisponiveisParaEmprestimo { get; set; }
     public string StatusLivro { get; set; } = null!;
     public string? NomeArquivoCapa { get; set; }
+    public bool Ativo { get; set; }
 }

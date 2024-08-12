@@ -12,4 +12,6 @@ public interface ILivroService
     Task<PaginacaoDto<LivroDto>> Pesquisar(PesquisarLivroDto dto);
     Task<LivroDto?> ObterPorId(int id);
     Task<List<LivroDto>> ObterTodos();
+    Task Ativar(int id);
+    Task Desativar(int id);
 }

@@ -20,7 +20,7 @@ public class LivroRepository : Repository<Livro>, ILivroRepository
         => Context.Livros.Update(livro);
 
     public async Task<IPaginacao<Livro>> Pesquisar(int? id, string? titulo, string? autor, string? editora,
-        string? categoria, int? codigo, int quantidadeDeItensPorPagina = 10, int paginaAtual = 1)
+        string? categoria, int? codigo, bool? ativo, int quantidadeDeItensPorPagina = 10, int paginaAtual = 1)
     {
         var consulta = Context.Livros
             .AsNoTracking()
@@ -43,6 +43,9 @@ public class LivroRepository : Repository<Livro>, ILivroRepository
 
         if (codigo.HasValue)
             consulta = consulta.Where(l => l.Codigo == codigo);
+
+        if (ativo.HasValue)
+            consulta = consulta.Where(l => l.Ativo == ativo);
 
         var resultadoPaginado = new Paginacao<Livro>
         {

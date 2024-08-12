@@ -47,6 +47,11 @@ public class EmprestimoMapping : IEntityTypeConfiguration<Emprestimo>
         builder
             .Property(e => e.LivroId)
             .IsRequired();
+        
+        builder
+            .Property(e => e.Ativo)
+            .IsRequired()
+            .HasDefaultValue(true);
 
         builder
             .Property(e => e.CriadoEm)

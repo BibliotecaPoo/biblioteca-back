@@ -51,6 +51,11 @@ public class UsuarioMapping : IEntityTypeConfiguration<Usuario>
             .HasDefaultValue(false);
 
         builder
+            .Property(u => u.Ativo)
+            .IsRequired()
+            .HasDefaultValue(true);
+
+        builder
             .Property(u => u.CriadoEm)
             .ValueGeneratedOnAdd()
             .HasColumnType("DATETIME");

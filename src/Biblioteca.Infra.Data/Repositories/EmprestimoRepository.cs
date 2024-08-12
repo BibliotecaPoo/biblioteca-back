@@ -29,7 +29,7 @@ public class EmprestimoRepository : Repository<Emprestimo>, IEmprestimoRepositor
     }
 
     public async Task<IPaginacao<Emprestimo>> Pesquisar(int? id, int? usuarioId, string? usuarioMatricula, int? livroId,
-        int? livroCodigo, int quantidadeDeItensPorPagina = 10, int paginaAtual = 1)
+        int? livroCodigo, bool? ativo, int quantidadeDeItensPorPagina = 10, int paginaAtual = 1)
     {
         var consulta = Context.Emprestimos
             .AsNoTracking()
@@ -51,6 +51,9 @@ public class EmprestimoRepository : Repository<Emprestimo>, IEmprestimoRepositor
 
         if (livroCodigo.HasValue)
             consulta = consulta.Where(e => e.Livro.Codigo == livroCodigo);
+
+        if (ativo.HasValue)
+            consulta = consulta.Where(e => e.Ativo == ativo);
 
         var resultadoPaginado = new Paginacao<Emprestimo>
         {

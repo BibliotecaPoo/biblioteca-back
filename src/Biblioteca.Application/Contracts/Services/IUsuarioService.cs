@@ -9,4 +9,6 @@ public interface IUsuarioService
     Task<UsuarioDto?> Atualizar(int id, AtualizarUsuarioDto dto);
     Task<PaginacaoDto<UsuarioDto>> Pesquisar(PesquisarUsuarioDto dto);
     Task<List<UsuarioDto>> ObterTodos();
+    Task Ativar(int id);
+    Task Desativar(int id);
 }

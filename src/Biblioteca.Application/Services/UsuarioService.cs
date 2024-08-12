@@ -50,7 +50,7 @@ public class UsuarioService : BaseService, IUsuarioService
     public async Task<PaginacaoDto<UsuarioDto>> Pesquisar(PesquisarUsuarioDto dto)
     {
         var resultadoPaginado = await _usuarioRepository.Pesquisar(dto.Id, dto.Nome, dto.Email, dto.Matricula,
-            dto.Curso, dto.QuantidadeDeItensPorPagina, dto.PaginaAtual);
+            dto.Curso, dto.Ativo, dto.QuantidadeDeItensPorPagina, dto.PaginaAtual);
 
         return new PaginacaoDto<UsuarioDto>
         {
@@ -66,6 +66,54 @@ public class UsuarioService : BaseService, IUsuarioService
     {
         var obterUsuarios = await _usuarioRepository.ObterTodos();
         return Mapper.Map<List<UsuarioDto>>(obterUsuarios);
+    }
+
+    public async Task Ativar(int id)
+    {
+        var usuario = await _usuarioRepository.FirstOrDefault(u => u.Id == id);
+        if (usuario == null)
+        {
+            Notificator.HandleNotFoundResource();
+            return;
+        }
+
+        if (usuario.Ativo)
+        {
+            Notificator.Handle("O usuário informado já está ativado.");
+            return;
+        }
+
+        usuario.Ativo = true;
+        
+        _usuarioRepository.Atualizar(usuario);
+        await CommitChanges();
+    }
+
+    public async Task Desativar(int id)
+    {
+        var usuario = await _usuarioRepository.FirstOrDefault(u => u.Id == id);
+        if (usuario == null)
+        {
+            Notificator.HandleNotFoundResource();
+            return;
+        }
+
+        if (usuario.Ativo == false)
+        {
+            Notificator.Handle("O usuário informado já está desativado.");
+            return;
+        }
+
+        if (usuario.QuantidadeEmprestimosRealizados > 0)
+        {
+            Notificator.Handle("O usuário informado não pode ser desativado, pois o mesmo possui livros emprestados.");
+            return;
+        }
+
+        usuario.Ativo = false;
+        
+        _usuarioRepository.Atualizar(usuario);
+        await CommitChanges();
     }
 
     private async Task<bool> ValidacoesParaAdicionarUsuario(AdicionarUsuarioDto dto)

@@ -61,6 +61,11 @@ public class LivroMapping : IEntityTypeConfiguration<Livro>
             .Property(l => l.NomeArquivoCapa)
             .IsRequired(false)
             .HasColumnType("VARCHAR(255)");
+        
+        builder
+            .Property(l => l.Ativo)
+            .IsRequired()
+            .HasDefaultValue(true);
 
         builder
             .Property(l => l.CriadoEm)

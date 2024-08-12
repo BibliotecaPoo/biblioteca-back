@@ -100,7 +100,7 @@ public class LivroService : BaseService, ILivroService
     public async Task<PaginacaoDto<LivroDto>> Pesquisar(PesquisarLivroDto dto)
     {
         var resultadoPaginado = await _livroRepository.Pesquisar(dto.Id, dto.Titulo, dto.Autor,
-            dto.Editora, dto.Categoria, dto.Codigo, dto.QuantidadeDeItensPorPagina, dto.PaginaAtual);
+            dto.Editora, dto.Categoria, dto.Codigo, dto.Ativo, dto.QuantidadeDeItensPorPagina, dto.PaginaAtual);
 
         return new PaginacaoDto<LivroDto>
         {
@@ -126,6 +126,54 @@ public class LivroService : BaseService, ILivroService
     {
         var obterLivros = await _livroRepository.ObterTodos();
         return Mapper.Map<List<LivroDto>>(obterLivros);
+    }
+
+    public async Task Ativar(int id)
+    {
+        var livro = await _livroRepository.FirstOrDefault(l => l.Id == id);
+        if (livro == null)
+        {
+            Notificator.HandleNotFoundResource();
+            return;
+        }
+
+        if (livro.Ativo)
+        {
+            Notificator.Handle("O livro informado já está ativado.");
+            return;
+        }
+
+        livro.Ativo = true;
+        
+        _livroRepository.Atualizar(livro);
+        await CommitChanges();
+    }
+
+    public async Task Desativar(int id)
+    {
+        var livro = await _livroRepository.FirstOrDefault(l => l.Id == id);
+        if (livro == null)
+        {
+            Notificator.HandleNotFoundResource();
+            return;
+        }
+
+        if (livro.Ativo == false)
+        {
+            Notificator.Handle("O livro informado já está desativado.");
+            return;
+        }
+
+        if (livro.QuantidadeExemplaresDisponiveisParaEmprestimo != livro.QuantidadeExemplaresDisponiveisEmEstoque)
+        {
+            Notificator.Handle("O livro informado não pode ser desativado, pois o mesmo possui exemplares emprestados.");
+            return;
+        }
+
+        livro.Ativo = false;
+        
+        _livroRepository.Atualizar(livro);
+        await CommitChanges();
     }
 
     private async Task<bool> ValidacoesParaAdicionarLivro(AdicionarLivroDto dto)

@@ -10,4 +10,6 @@ public interface IEmprestimoService
     Task<EmprestimoDto?> RealizarEntrega(int id, RealizarEntregaDto dto);
     Task<PaginacaoDto<EmprestimoDto>> Pesquisar(PesquisarEmprestimoDto dto);
     Task<List<EmprestimoDto>> ObterTodos();
+    Task Ativar(int id);
+    Task Desativar(int id);
 }
