@@ -37,8 +37,7 @@ public class EmprestimoMapping : IEntityTypeConfiguration<Emprestimo>
 
         builder
             .Property(e => e.QuantidadeRenovacoesRealizadas)
-            .IsRequired()
-            .HasDefaultValue(0);
+            .IsRequired();
 
         builder
             .Property(e => e.UsuarioId)
@@ -50,8 +49,7 @@ public class EmprestimoMapping : IEntityTypeConfiguration<Emprestimo>
         
         builder
             .Property(e => e.Ativo)
-            .IsRequired()
-            .HasDefaultValue(true);
+            .IsRequired();
 
         builder
             .Property(e => e.CriadoEm)

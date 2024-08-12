@@ -6,5 +6,5 @@ public class AdicionarUsuarioDto
     public string Matricula { get; set; } = null!;
     public string Curso { get; set; } = null!;
     public string Email { get; set; } = null!;
-    public string? Senha { get; set; } = null!;
+    public string Senha { get; set; } = null!;
 }

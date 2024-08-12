@@ -30,6 +30,9 @@ public class UsuarioService : BaseService, IUsuarioService
         var adicionarUsuario = Mapper.Map<Usuario>(dto);
         adicionarUsuario.Senha = _passwordHasher.HashPassword(adicionarUsuario, dto.Senha);
         adicionarUsuario.QuantidadeEmprestimosPermitida = 5;
+        adicionarUsuario.QuantidadeEmprestimosRealizados = 0;
+        adicionarUsuario.Bloqueado = false;
+        adicionarUsuario.Ativo = true;
 
         _usuarioRepository.Adicionar(adicionarUsuario);
         return await CommitChanges() ? Mapper.Map<UsuarioDto>(adicionarUsuario) : null;

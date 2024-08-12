@@ -42,18 +42,15 @@ public class UsuarioMapping : IEntityTypeConfiguration<Usuario>
 
         builder
             .Property(u => u.QuantidadeEmprestimosRealizados)
-            .IsRequired()
-            .HasDefaultValue(0);
+            .IsRequired();
 
         builder
             .Property(u => u.Bloqueado)
-            .IsRequired()
-            .HasDefaultValue(false);
+            .IsRequired();
 
         builder
             .Property(u => u.Ativo)
-            .IsRequired()
-            .HasDefaultValue(true);
+            .IsRequired();
 
         builder
             .Property(u => u.CriadoEm)

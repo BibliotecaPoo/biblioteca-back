@@ -57,8 +57,10 @@ public class EmprestimoService : BaseService, IEmprestimoService
         emprestimo.DataDevolucaoPrevista = DateTime.Today.AddDays(10);
         emprestimo.StatusEmprestimo = EStatusEmprestimo.Emprestado;
         emprestimo.QuantidadeRenovacoesPermitida = 5;
+        emprestimo.QuantidadeRenovacoesRealizadas = 0;
         emprestimo.UsuarioId = usuario.Id;
         emprestimo.LivroId = livro.Id;
+        emprestimo.Ativo = true;
 
         _emprestimoRepository.Adicionar(emprestimo);
         return await CommitChanges() ? Mapper.Map<EmprestimoDto>(emprestimo) : null;
@@ -112,7 +114,7 @@ public class EmprestimoService : BaseService, IEmprestimoService
             EStatusEmprestimo.EntregueComAtraso : EStatusEmprestimo.Entregue;
         _emprestimoRepository.Atualizar(emprestimo);
 
-        if (usuario.Bloqueado == true)
+        if (usuario.Bloqueado)
         {
             var emprestimoAtrasado = await _emprestimoRepository.FirstOrDefault(e =>
                 e.UsuarioId == usuario.Id &&
@@ -239,7 +241,7 @@ public class EmprestimoService : BaseService, IEmprestimoService
             return false;
         }
 
-        if (usuario.Bloqueado == true)
+        if (usuario.Bloqueado)
         {
             Notificator.Handle("O usuário está temporariamente impedido de realizar empréstimos ou renovações.");
             return false;
@@ -334,7 +336,7 @@ public class EmprestimoService : BaseService, IEmprestimoService
             return false;
         }
 
-        if (usuarioInformadoNaDto.Bloqueado == true)
+        if (usuarioInformadoNaDto.Bloqueado)
         {
             Notificator.Handle("O usuário está temporariamente impedido de realizar empréstimos ou renovações.");
             return false;

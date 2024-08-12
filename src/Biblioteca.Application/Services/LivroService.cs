@@ -35,6 +35,7 @@ public class LivroService : BaseService, ILivroService
         adicionarLivro.Codigo = await GerarCodigo();
         adicionarLivro.QuantidadeExemplaresDisponiveisParaEmprestimo = adicionarLivro.QuantidadeExemplaresDisponiveisEmEstoque;
         adicionarLivro.StatusLivro = EStatusLivro.Disponivel;
+        adicionarLivro.Ativo = true;
 
         _livroRepository.Adicionar(adicionarLivro);
         return await CommitChanges() ? Mapper.Map<LivroDto>(adicionarLivro) : null;
