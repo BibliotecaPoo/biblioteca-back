@@ -54,6 +54,8 @@ public class EmprestimoRepository : Repository<Emprestimo>, IEmprestimoRepositor
 
         if (ativo.HasValue)
             consulta = consulta.Where(e => e.Ativo == ativo);
+        
+        consulta = consulta.OrderByDescending(e => e.DataEmprestimo);
 
         var resultadoPaginado = new Paginacao<Emprestimo>
         {
