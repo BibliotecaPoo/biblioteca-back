@@ -207,11 +207,23 @@ public class EmprestimoService : BaseService, IEmprestimoService
             Notificator.Handle("Usuário não encontrado com a matrícula informada.");
             return false;
         }
+
+        if (usuario.Ativo == false)
+        {
+            Notificator.Handle("Não é possível realizar um empréstimo para um usuário desativado.");
+            return false;
+        }
         
         var livro = await _livroRepository.FirstOrDefault(l => l.Codigo == dto.LivroCodigo);
         if (livro == null)
         {
             Notificator.Handle("Livro não encontrado com o código informado.");
+            return false;
+        }
+
+        if (livro.Ativo == false)
+        {
+            Notificator.Handle("Não é possível realizar um empréstimo para um livro desativado.");
             return false;
         }
         

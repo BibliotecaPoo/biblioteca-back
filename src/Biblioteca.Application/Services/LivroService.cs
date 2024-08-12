@@ -216,6 +216,12 @@ public class LivroService : BaseService, ILivroService
             Notificator.HandleNotFoundResource();
             return false;
         }
+        
+        if (livroExistente.Ativo == false)
+        {
+            Notificator.Handle("Não é possível atualizar um livro que está desativado.");
+            return false;
+        }
 
         if (livroExistente.QuantidadeExemplaresDisponiveisParaEmprestimo <
             livroExistente.QuantidadeExemplaresDisponiveisEmEstoque)

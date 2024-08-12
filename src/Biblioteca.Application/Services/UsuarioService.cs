@@ -159,6 +159,12 @@ public class UsuarioService : BaseService, IUsuarioService
             Notificator.HandleNotFoundResource();
             return false;
         }
+        
+        if (usuarioExistente.Ativo == false)
+        {
+            Notificator.Handle("Não é possível atualizar um usuário que está desativado.");
+            return false;
+        }
 
         var usuario = Mapper.Map<Usuario>(dto);
         var validador = new UsuarioValidator();
