@@ -10,7 +10,6 @@ public interface ILivroService
     Task<LivroDto?> Atualizar(int id, AtualizarLivroDto dto);
     Task<LivroDto?> UploadCapa(int id, ICollection<IFormFile>? files);
     Task<PaginacaoDto<LivroDto>> Pesquisar(PesquisarLivroDto dto);
-    Task<LivroDto?> ObterPorId(int id);
     Task<List<LivroDto>> ObterTodos();
     Task Ativar(int id);
     Task Desativar(int id);

@@ -21,7 +21,7 @@ public class EmprestimoController : BaseController
     }
 
     [HttpPost]
-    [SwaggerOperation(Tags = new[] { "Administração - Empréstimos" })]
+    [SwaggerOperation(Summary = "Realizar um novo empréstimo", Tags = new[] { "Administração - Empréstimos" })]
     [ProducesResponseType(typeof(EmprestimoDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -31,8 +31,8 @@ public class EmprestimoController : BaseController
         return CreatedResponse("", realizarEmprestimo);
     }
 
-    [HttpPut("Renovacao/{id}")]
-    [SwaggerOperation(Tags = new[] { "Administração - Empréstimos" })]
+    [HttpPut("renovacao/{id}")]
+    [SwaggerOperation(Summary = "Realizar a renovação de um empréstimo", Tags = new[] { "Administração - Empréstimos" })]
     [ProducesResponseType(typeof(EmprestimoDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -43,8 +43,8 @@ public class EmprestimoController : BaseController
         return OkResponse(realizarRenovacao);
     }
 
-    [HttpPut("Entrega/{id}")]
-    [SwaggerOperation(Tags = new[] { "Administração - Empréstimos" })]
+    [HttpPut("entrega/{id}")]
+    [SwaggerOperation(Summary = "Realizar a entrega de um empréstimo", Tags = new[] { "Administração - Empréstimos" })]
     [ProducesResponseType(typeof(EmprestimoDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -55,8 +55,8 @@ public class EmprestimoController : BaseController
         return OkResponse(realizarEntrega);
     }
 
-    [HttpGet("Pesquisar")]
-    [SwaggerOperation(Tags = new[] { "Administração - Empréstimos" })]
+    [HttpGet("pesquisar")]
+    [SwaggerOperation(Summary = "Pesquisar por empréstimos", Tags = new[] { "Administração - Empréstimos" })]
     [ProducesResponseType(typeof(PaginacaoDto<EmprestimoDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Pesquisar([FromQuery] PesquisarEmprestimoDto dto)
@@ -65,8 +65,8 @@ public class EmprestimoController : BaseController
         return OkResponse(obterEmprestimos);
     }
 
-    [HttpGet("Obter-Todos")]
-    [SwaggerOperation(Tags = new[] { "Administração - Empréstimos" })]
+    [HttpGet("obter-todos")]
+    [SwaggerOperation(Summary = "Obter todos os empréstimos cadastrados", Tags = new[] { "Administração - Empréstimos" })]
     [ProducesResponseType(typeof(EmprestimoDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> ObterTodos()
@@ -76,7 +76,7 @@ public class EmprestimoController : BaseController
     }
     
     [HttpPatch("ativar/{id}")]
-    [SwaggerOperation(Tags = new[] { "Administração - Empréstimos" })]
+    [SwaggerOperation(Summary = "Ativar um empréstimo", Tags = new[] { "Administração - Empréstimos" })]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -88,7 +88,7 @@ public class EmprestimoController : BaseController
     }
     
     [HttpPatch("desativar/{id}")]
-    [SwaggerOperation(Tags = new[] { "Administração - Empréstimos" })]
+    [SwaggerOperation(Summary = "Desativar um empréstimo", Tags = new[] { "Administração - Empréstimos" })]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

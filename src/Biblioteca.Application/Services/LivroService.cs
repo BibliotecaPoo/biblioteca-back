@@ -113,16 +113,6 @@ public class LivroService : BaseService, ILivroService
         };
     }
 
-    public async Task<LivroDto?> ObterPorId(int id)
-    {
-        var obterLivro = await _livroRepository.FirstOrDefault(l => l.Id == id);
-        if (obterLivro != null)
-            return Mapper.Map<LivroDto>(obterLivro);
-
-        Notificator.HandleNotFoundResource();
-        return null;
-    }
-
     public async Task<List<LivroDto>> ObterTodos()
     {
         var obterLivros = await _livroRepository.ObterTodos();

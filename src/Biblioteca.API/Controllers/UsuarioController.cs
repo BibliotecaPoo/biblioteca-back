@@ -21,7 +21,7 @@ public class UsuarioController : BaseController
     }
 
     [HttpPost]
-    [SwaggerOperation(Tags = new[] { "Administração - Usuários" })]
+    [SwaggerOperation(Summary = "Adicionar um novo usuário", Tags = new[] { "Administração - Usuários" })]
     [ProducesResponseType(typeof(UsuarioDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -32,7 +32,7 @@ public class UsuarioController : BaseController
     }
 
     [HttpPut("{id}")]
-    [SwaggerOperation(Tags = new[] { "Administração - Usuários" })]
+    [SwaggerOperation(Summary = "Atualizar um usuário existente", Tags = new[] { "Administração - Usuários" })]
     [ProducesResponseType(typeof(UsuarioDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -43,8 +43,8 @@ public class UsuarioController : BaseController
         return OkResponse(atualizarUsuario);
     }
 
-    [HttpGet("Pesquisar")]
-    [SwaggerOperation(Tags = new[] { "Administração - Usuários" })]
+    [HttpGet("pesquisar")]
+    [SwaggerOperation(Summary = "Pesquisar por usuários", Tags = new[] { "Administração - Usuários" })]
     [ProducesResponseType(typeof(PaginacaoDto<UsuarioDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Pesquisar([FromQuery] PesquisarUsuarioDto dto)
@@ -53,8 +53,8 @@ public class UsuarioController : BaseController
         return OkResponse(obterUsuarios);
     }
 
-    [HttpGet("Obter-Todos")]
-    [SwaggerOperation(Tags = new[] { "Administração - Usuários" })]
+    [HttpGet("obter-todos")]
+    [SwaggerOperation(Summary = "Obter todos os usuários cadastrados", Tags = new[] { "Administração - Usuários" })]
     [ProducesResponseType(typeof(UsuarioDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> ObterTodos()
@@ -64,7 +64,7 @@ public class UsuarioController : BaseController
     }
 
     [HttpPatch("ativar/{id}")]
-    [SwaggerOperation(Tags = new[] { "Administração - Usuários" })]
+    [SwaggerOperation(Summary = "Ativar um usuário", Tags = new[] { "Administração - Usuários" })]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -76,7 +76,7 @@ public class UsuarioController : BaseController
     }
     
     [HttpPatch("desativar/{id}")]
-    [SwaggerOperation(Tags = new[] { "Administração - Usuários" })]
+    [SwaggerOperation(Summary = "Desativar um usuário", Tags = new[] { "Administração - Usuários" })]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
