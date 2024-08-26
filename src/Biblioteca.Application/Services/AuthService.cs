@@ -1,7 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using AutoMapper;
-using Biblioteca.Application.Configuration;
+using Biblioteca.Application.Configurations;
 using Biblioteca.Application.Contracts.Services;
 using Biblioteca.Application.DTOs.Auth;
 using Biblioteca.Application.Notifications;

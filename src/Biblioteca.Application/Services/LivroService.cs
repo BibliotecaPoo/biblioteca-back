@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Biblioteca.Application.Configuration;
+using Biblioteca.Application.Configurations;
 using Biblioteca.Application.Contracts.Services;
 using Biblioteca.Application.DTOs.Livro;
 using Biblioteca.Application.DTOs.Paginacao;

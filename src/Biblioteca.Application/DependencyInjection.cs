@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using Biblioteca.Application.Configuration;
+using Biblioteca.Application.Configurations;
 using Biblioteca.Application.Contracts.Services;
 using Biblioteca.Application.Notifications;
 using Biblioteca.Application.Services;
@@ -14,20 +14,21 @@ namespace Biblioteca.Application;
 
 public static class DependencyInjection
 {
-    public static void SetupSettings(this IServiceCollection services, IConfiguration configuration)
+    public static void ConfigurarCamadaDeAplicacao(this IServiceCollection services, IConfiguration configuration)
+    {
+        ConfigurarClassesDeConfiguracao(services, configuration);
+        ConfigurarDependenciasDeServicos(services);
+        services.AddAutoMapper(Assembly.GetExecutingAssembly());
+        services.ConfigurarCamadaDeInfraestrutura(configuration);
+    }
+
+    private static void ConfigurarClassesDeConfiguracao(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
         services.Configure<StorageSettings>(configuration.GetSection("StorageSettings"));
     }
 
-    public static void ConfigureApplication(this IServiceCollection services, IConfiguration configuration)
-    {
-        services.AddAutoMapper(Assembly.GetExecutingAssembly());
-        services.ConfigureDbContext(configuration);
-        services.RepositoryDependency();
-    }
-
-    public static void AddServices(this IServiceCollection services)
+    private static void ConfigurarDependenciasDeServicos(this IServiceCollection services)
     {
         services
             .AddScoped<IPasswordHasher<Administrador>, Argon2PasswordHasher<Administrador>>()

@@ -1,4 +1,4 @@
-﻿using Biblioteca.Application.Configuration;
+﻿using Biblioteca.Application.Configurations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.IdentityModel.Tokens;
@@ -7,7 +7,8 @@ namespace Biblioteca.API.Configurations;
 
 public static class AuthenticationConfiguration
 {
-    public static void AddAuthenticationConfig(this IServiceCollection services, IConfiguration configuration)
+    public static void AdicionarConfiguracaoDeAutenticacao(this IServiceCollection services,
+        IConfiguration configuration)
     {
         var appSettingsSection = configuration.GetSection("JwtSettings");
         services.Configure<JwtSettings>(appSettingsSection);
@@ -31,18 +32,14 @@ public static class AuthenticationConfiguration
 
         services.AddAuthorization();
 
-        services
-            .AddDataProtection()
-            .PersistKeysToFileSystem(new DirectoryInfo(appSettings.CaminhoKeys));
+        services.AddDataProtection().PersistKeysToFileSystem(new DirectoryInfo(appSettings.CaminhoKeys));
 
-        services
-            .AddJwksManager()
-            .UseJwtValidation();
+        services.AddJwksManager().UseJwtValidation();
 
         services.AddMemoryCache();
     }
 
-    public static void UseAuthenticationConfig(this IApplicationBuilder app)
+    public static void UsarConfiguracaoDeAutenticacao(this IApplicationBuilder app)
     {
         app.UseAuthentication();
         app.UseAuthorization();

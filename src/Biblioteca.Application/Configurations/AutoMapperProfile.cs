@@ -5,7 +5,7 @@ using Biblioteca.Application.DTOs.Livro;
 using Biblioteca.Application.DTOs.Usuario;
 using Biblioteca.Domain.Entities;
 
-namespace Biblioteca.Application.Configuration;
+namespace Biblioteca.Application.Configurations;
 
 public class AutoMapperProfile : Profile
 {

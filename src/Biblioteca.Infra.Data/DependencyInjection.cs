@@ -9,7 +9,13 @@ namespace Biblioteca.Infra.Data;
 
 public static class DependencyInjection
 {
-    public static void ConfigureDbContext(this IServiceCollection services, IConfiguration configuration)
+    public static void ConfigurarCamadaDeInfraestrutura(this IServiceCollection services, IConfiguration configuration)
+    {
+        ConfigurarBancoDeDados(services, configuration);
+        ConfigurarDependenciasDeRepositorios(services);
+    }
+
+    private static void ConfigurarBancoDeDados(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<ApplicationDbContext>(options =>
         {
@@ -22,7 +28,7 @@ public static class DependencyInjection
         });
     }
 
-    public static void RepositoryDependency(this IServiceCollection services)
+    private static void ConfigurarDependenciasDeRepositorios(this IServiceCollection services)
     {
         services
             .AddScoped<IAdministradorRepository, AdministradorRepository>()

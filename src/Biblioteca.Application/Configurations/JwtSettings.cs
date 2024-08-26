@@ -1,4 +1,4 @@
-﻿namespace Biblioteca.Application.Configuration;
+﻿namespace Biblioteca.Application.Configurations;
 
 public class JwtSettings
 {

@@ -8,7 +8,7 @@ namespace Biblioteca.API.Configurations;
 
 public static class SwaggerConfiguration
 {
-    public static void AddSwagger(this IServiceCollection services)
+    public static void AdicionarConfiguracaoDoSwagger(this IServiceCollection services)
     {
         services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 
@@ -23,9 +23,9 @@ public static class SwaggerConfiguration
             options.OperationFilter<SwaggerDefaultValues>();
             options.DocumentFilter<LowercaseDocumentFilter>();
 
-            options.OrderActionsBy(a => a.GroupName);
+            options.OrderActionsBy(apiDescription => apiDescription.GroupName);
 
-            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 Name = "Authorization",
                 Type = SecuritySchemeType.ApiKey,
@@ -52,14 +52,14 @@ public static class SwaggerConfiguration
         });
     }
 
-    public static void UseSwaggerConfig(this IApplicationBuilder app)
+    public static void UsarConfiguracaoDoSwagger(this IApplicationBuilder app)
     {
         var provider = app.ApplicationServices.GetRequiredService<IApiVersionDescriptionProvider>();
 
         app.UseSwagger();
         app.UseSwaggerUI(options =>
         {
-            foreach (var groupName in provider.ApiVersionDescriptions.Select(c => c.GroupName))
+            foreach (var groupName in provider.ApiVersionDescriptions.Select(description => description.GroupName))
             {
                 options.SwaggerEndpoint($"/swagger/{groupName}/swagger.json", groupName.ToUpperInvariant());
             }
