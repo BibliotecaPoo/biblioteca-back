@@ -115,6 +115,9 @@ public class EmprestimoService : BaseService, IEmprestimoService
             EStatusEmprestimo.EntregueComAtraso : EStatusEmprestimo.Entregue;
         _emprestimoRepository.Atualizar(emprestimo);
 
+        if (!await CommitChanges())
+            return null;
+
         if (usuario.Bloqueado)
         {
             var emprestimoAtrasado = await _emprestimoRepository.FirstOrDefault(e =>
@@ -129,7 +132,7 @@ public class EmprestimoService : BaseService, IEmprestimoService
             }
         }
 
-        return await CommitChanges() ? Mapper.Map<EmprestimoDto>(emprestimo) : null;
+        return Mapper.Map<EmprestimoDto>(emprestimo);
     }
 
     public async Task<PaginacaoDto<EmprestimoDto>> Pesquisar(PesquisarEmprestimoDto dto)
