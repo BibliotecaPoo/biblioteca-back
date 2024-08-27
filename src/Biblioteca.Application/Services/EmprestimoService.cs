@@ -109,6 +109,7 @@ public class EmprestimoService : BaseService, IEmprestimoService
         livro.QuantidadeExemplaresDisponiveisParaEmprestimo += 1;
         _livroRepository.Atualizar(livro);
 
+        emprestimo.Ativo = false;
         emprestimo.DataDevolucaoRealizada = DateTime.Today;
         emprestimo.StatusEmprestimo = emprestimo.DataDevolucaoRealizada > emprestimo.DataDevolucaoPrevista ? 
             EStatusEmprestimo.EntregueComAtraso : EStatusEmprestimo.Entregue;
@@ -124,6 +125,7 @@ public class EmprestimoService : BaseService, IEmprestimoService
             {
                 usuario.Bloqueado = false;
                 _usuarioRepository.Atualizar(usuario);
+                await _usuarioRepository.UnitOfWork.Commit();
             }
         }
 
@@ -255,6 +257,7 @@ public class EmprestimoService : BaseService, IEmprestimoService
         {
             usuario.Bloqueado = true;
             _usuarioRepository.Atualizar(usuario);
+            await _usuarioRepository.UnitOfWork.Commit();
 
             Notificator.Handle("O usuário possui livro(s) não devolvido(s) e atrasado(s). " +
                                "O usuário será impedido de fazer empréstimos/renovações até devolvê-lo(s).");
@@ -350,6 +353,7 @@ public class EmprestimoService : BaseService, IEmprestimoService
         {
             usuarioInformadoNaDto.Bloqueado = true;
             _usuarioRepository.Atualizar(usuarioInformadoNaDto);
+            await _usuarioRepository.UnitOfWork.Commit();
 
             Notificator.Handle("O usuário possui livro(s) não devolvido(s) e atrasado(s). " +
                                "O usuário será impedido de fazer empréstimos/renovações até devolvê-lo(s).");
