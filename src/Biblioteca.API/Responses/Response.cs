@@ -1,12 +1,10 @@
-﻿using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
 
 namespace Biblioteca.API.Responses;
 
 public abstract class Response
 {
-    [JsonPropertyOrder(order: 1)] 
-    public string Title { get; set; } = null!;
+    [JsonProperty(Order = 1)] public string Title { get; set; } = null!;
 
-    [JsonPropertyOrder(order: 2)] 
-    public int Status { get; set; }
+    [JsonProperty(Order = 2)] public int Status { get; set; }
 }
