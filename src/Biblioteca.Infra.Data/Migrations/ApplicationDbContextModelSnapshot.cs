@@ -34,6 +34,9 @@ namespace Biblioteca.Infra.Data.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("DATETIME");
 
+                    b.Property<string>("CodigoDeRecuperacaoDeSenha")
+                        .HasColumnType("longtext");
+
                     b.Property<DateTime>("CriadoEm")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("DATETIME");
@@ -46,9 +49,17 @@ namespace Biblioteca.Infra.Data.Migrations
                         .IsRequired()
                         .HasColumnType("VARCHAR(50)");
 
+                    b.Property<bool>("PedidoDeRecuperacaoDeSenha")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false);
+
                     b.Property<string>("Senha")
                         .IsRequired()
                         .HasColumnType("VARCHAR(255)");
+
+                    b.Property<DateTime?>("TempoDeExpiracaoDoCodigoDeRecuperacaoDeSenha")
+                        .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
 
