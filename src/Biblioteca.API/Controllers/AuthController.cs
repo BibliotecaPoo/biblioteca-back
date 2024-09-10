@@ -29,4 +29,26 @@ public class AuthController : BaseController
         var token = await _authService.Login(dto);
         return token != null ? OkResponse(token) : Unauthorized(new[] { "Email e/ou senha incorretos." });
     }
+    
+    [HttpPost("esqueceu-senha")]
+    [SwaggerOperation(Summary = "Esqueceu senha", Tags = new[] { "Autenticação" })]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> EsqueceuSenha([FromQuery] string email)
+    {
+        await _authService.EsqueceuSenha(email);
+        return OkResponse("Um e-mail foi enviado com instruções para alterar sua senha.");
+    }
+    
+    [HttpPost("resetar-senha")]
+    [SwaggerOperation(Summary = "Alterar senha", Tags = new[] { "Autenticação" })]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> AlterarSenha([FromBody] AlterarSenhaDto dto)
+    {
+        await _authService.AlterarSenha(dto);
+        return OkResponse("Senha alterada com sucesso.");
+    }
 }
