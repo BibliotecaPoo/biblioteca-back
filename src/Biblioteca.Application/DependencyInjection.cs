@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Biblioteca.Application.Configurations;
 using Biblioteca.Application.Contracts.Services;
+using Biblioteca.Application.Email;
 using Biblioteca.Application.Notifications;
 using Biblioteca.Application.Services;
 using Biblioteca.Domain.Entities;
@@ -26,6 +27,7 @@ public static class DependencyInjection
     {
         services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
         services.Configure<StorageSettings>(configuration.GetSection("StorageSettings"));
+        services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
     }
 
     private static void ConfigurarDependenciasDeServicos(this IServiceCollection services)
@@ -39,6 +41,7 @@ public static class DependencyInjection
             .AddScoped<IAuthService, AuthService>()
             .AddScoped<IUsuarioService, UsuarioService>()
             .AddScoped<ILivroService, LivroService>()
-            .AddScoped<IEmprestimoService, EmprestimoService>();
+            .AddScoped<IEmprestimoService, EmprestimoService>()
+            .AddScoped<IEmailService, EmailService>();
     }
 }
