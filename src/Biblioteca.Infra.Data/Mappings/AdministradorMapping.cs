@@ -30,6 +30,18 @@ public class AdministradorMapping : IEntityTypeConfiguration<Administrador>
             .Property(a => a.Ativo)
             .IsRequired()
             .HasDefaultValue(true);
+        
+        builder
+            .Property(a => a.CodigoDeRecuperacaoDeSenha)
+            .IsRequired(false);
+
+        builder
+            .Property(a => a.TempoDeExpiracaoDoCodigoDeRecuperacaoDeSenha)
+            .IsRequired(false);
+
+        builder
+            .Property(a => a.PedidoDeRecuperacaoDeSenha)
+            .HasDefaultValue(false);
 
         builder
             .Property(a => a.CriadoEm)
