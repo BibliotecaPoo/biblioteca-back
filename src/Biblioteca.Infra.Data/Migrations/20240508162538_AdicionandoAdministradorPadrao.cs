@@ -15,7 +15,7 @@ namespace Biblioteca.Infra.Data.Migrations
                 columns: new[] { "Id", "Nome", "Email", "Senha" },
                 values: new object[,]
                 {
-                    { 1, "Administrador", "admin@admin.com", senha  }
+                    { 1, "Administrador", "gestaobibliotecaacademica@gmail.com", senha  }
                 });
         }
 
